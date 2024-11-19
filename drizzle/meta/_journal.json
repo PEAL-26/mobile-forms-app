@@ -1,0 +1,41 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1731862958498,
+      "tag": "0000_striped_paladin",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1731864509848,
+      "tag": "0001_open_silhouette",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1731867308579,
+      "tag": "0002_lucky_electro",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1731872295117,
+      "tag": "0003_glossy_jasper_sitwell",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1731893079513,
+      "tag": "0004_small_stranger",
+      "breakpoints": true
+    }
+  ]
+}
