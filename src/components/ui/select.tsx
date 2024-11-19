@@ -34,7 +34,7 @@ export function Select<T extends ItemType>(props: Props<T>) {
   return (
     <>
       <Button
-        className="h-8 px-3 text-xs w-full rounded-md border border-input bg-background flex-row items-center justify-between"
+        className="h-12 px-3 text-xs w-full rounded-md border border-input bg-background flex-row items-center justify-between"
         containerClassName="w-full "
         onPress={() => setOpenModal(true)}
       >

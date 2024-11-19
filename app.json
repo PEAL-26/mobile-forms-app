@@ -15,7 +15,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.peal26.mobileformsapp"
     },
     "web": {
       "bundler": "metro",
@@ -42,6 +43,11 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "750bf1f6-8920-40bb-b01e-49d58995a36f"
+      }
     }
   }
 }

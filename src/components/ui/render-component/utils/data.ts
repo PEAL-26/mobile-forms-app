@@ -1,3 +1,6 @@
+// import { db } from "@/db";
+
+import { db } from "@/db";
 
 export enum DataType {
   Table = "table",
@@ -7,6 +10,11 @@ export enum DataType {
 type Config = {
   dataFields?: string;
   dataWhere?: string;
+};
+
+export type DataTableResponse = {
+  id: string;
+  title: string;
 };
 
 export async function getData(data?: string, configs?: Config) {
@@ -58,10 +66,10 @@ function paseArray(value: string) {
   return array;
 }
 
-function createQuery(tableName: string, configs: Config) {
+function createQuery(tableName: string, configs?: Config) {
   let fields = "*";
 
-  if (configs.dataFields) {
+  if (configs?.dataFields) {
     try {
       const parse = JSON.parse(String(configs.dataFields));
       fields = `${parse.identifier} as id, ${parse.title} as title`;
@@ -75,12 +83,16 @@ function createQuery(tableName: string, configs: Config) {
   return `select ${fields} from ${tableName}`;
 }
 
-async function getDataTable(query: string) {
+async function getDataTable(sql: string) {
   // if (!db) {
   //   throw new Error("Database not set");
   // }
-
-  // const data = db.
+  try {
+    const data = await db.query<DataTableResponse>(sql);
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
 
   return [];
 }

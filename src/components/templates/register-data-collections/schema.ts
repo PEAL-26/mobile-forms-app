@@ -27,13 +27,18 @@ const collectionSchema = z.object({
   extraFieldValue: z.any().optional(),
 });
 
+const dataCollectionFormSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  descriptions: z.string().optional(),
+});
+
 export const dataCollectionSchema = z.object({
-  form: z.object({
-    id: z.number(),
-    name: z.string(),
-    descriptions: z.string().optional(),
-  }),
+  form: dataCollectionFormSchema,
   collections: z.array(collectionSchema),
 });
 
+export type DataCollectionFormSchemaType = z.infer<
+  typeof dataCollectionFormSchema
+>;
 export type DataCollectionSchemaType = z.infer<typeof dataCollectionSchema>;

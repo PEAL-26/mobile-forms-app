@@ -11,7 +11,8 @@
     "lint": "expo lint",
     "drizzle:generate": "npx drizzle-kit generate",
     "drizzle:migrate": "npx drizzle-kit migrate",
-    "drizzle:studio": "npx drizzle-kit studio --verbose"
+    "drizzle:studio": "npx drizzle-kit studio --verbose",
+    "eas:build:dev:android": "eas build --profile development --platform android"
   },
   "jest": {
     "preset": "jest-expo"
@@ -29,6 +30,8 @@
     "@rn-primitives/slot": "^1.1.0",
     "@rn-primitives/tabs": "^1.1.0",
     "@rn-primitives/types": "^1.1.0",
+    "@shopify/flash-list": "1.7.1",
+    "@tanstack/react-query": "^5.60.6",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.36.3",
@@ -47,6 +50,7 @@
     "expo-symbols": "~0.2.0",
     "expo-system-ui": "~4.0.3",
     "expo-web-browser": "~14.0.1",
+    "lodash.debounce": "^4.0.8",
     "lucide-react-native": "^0.460.0",
     "nativewind": "^4.1.23",
     "react": "18.3.1",
@@ -68,11 +72,13 @@
     "unidecode": "^1.1.0",
     "uuid": "^11.0.3",
     "xlsx": "^0.18.5",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "expo-dev-client": "~5.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@types/jest": "^29.5.12",
+    "@types/lodash.debounce": "^4.0.9",
     "@types/react": "~18.3.12",
     "@types/react-test-renderer": "^18.3.0",
     "babel-plugin-inline-import": "^3.0.0",

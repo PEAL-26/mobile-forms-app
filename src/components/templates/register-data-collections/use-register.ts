@@ -6,7 +6,9 @@ import {
 } from "./schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { fieldsSeed, formsSeed } from "@/db/data";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { RegisterDataCollectionsProps } from "./types";
+import { Alert } from "react-native";
 
 export const DATA = {
   form: formsSeed[0],
@@ -43,13 +45,16 @@ function useQueryData(props?: QueryDataProps) {
   return { response };
 }
 
-export function useRegister() {
+export function useRegister(props: RegisterDataCollectionsProps) {
+  const { form: collectionsForm, onLoading } = props;
   const [isLoadingPage, setIsLoadingPage] = useState(true);
 
   const form = useForm<DataCollectionSchemaType>({
     resolver: zodResolver(dataCollectionSchema),
     mode: "onChange",
-    defaultValues: DATA,
+    defaultValues: {
+      form: collectionsForm,
+    },
   });
 
   const { fields: collections, update } = useFieldArray({
@@ -59,8 +64,32 @@ export function useRegister() {
 
   const { response } = useQueryData();
 
+  const handleSubmitOnConfirm = (data: DataCollectionSchemaType) => {
+    console.log(data);
+  };
+
   const handleSubmit = (data: DataCollectionSchemaType) => {
-    console.log(JSON.stringify(data, null, 5));
+    const { form, collections } = data;
+    if (!form?.id) {
+      return Alert.alert("Dados em falta.", "Selecione um formulário");
+    }
+
+    const requireFill = collections.some((collection) => !collection.value);
+    if (requireFill) {
+      Alert.alert(
+        "Dados em falta.",
+        "Alguns dados não foram preenchidos, continuar mesmo assim?",
+        [
+          {
+            text: "Sim",
+            onPress: () => {
+              handleSubmitOnConfirm(data);
+            },
+          },
+          { text: "Não" },
+        ]
+      );
+    }
   };
 
   const onError = (error: any) => {
@@ -79,10 +108,21 @@ export function useRegister() {
       ...data,
     });
   };
-  
+
   useEffect(() => {
     setIsLoadingPage(false);
-  }, []);
+    onLoading?.(false);
+  }, [onLoading]);
+
+  const loadingFormToRender = useCallback(async () => {
+    // Carregar formulário
+    setIsLoadingPage(false);
+    onLoading?.(false);
+  }, [onLoading]);
+
+  useEffect(() => {
+    loadingFormToRender();
+  }, [form, loadingFormToRender]);
 
   return {
     collections,
@@ -91,5 +131,9 @@ export function useRegister() {
     isLoadingPage,
     handleSubmit: form.handleSubmit(handleSubmit, onError),
     handleUpdate,
+    isLoadingAll: false,
+    isEmpty: false,
+    refetch: () => {},
+    loadNextPageData: () => {},
   };
 }

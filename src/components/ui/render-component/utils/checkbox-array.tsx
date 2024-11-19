@@ -80,7 +80,8 @@ export function CheckboxGroupArray(props: Props) {
       if (d.value === data.parent.value) {
         return {
           ...d,
-          ...currentData[index], identifier,
+          ...currentData[index],
+          identifier,
           extras: { value: data.value, display: data.display },
         };
       }
@@ -96,9 +97,9 @@ export function CheckboxGroupArray(props: Props) {
 
   return (
     <View className="flex-col gap-2">
-      {data.map((item) => (
+      {data.map((item, key) => (
         <CheckboxCustom
-          key={item.value}
+          key={`${item.value}-${key}`}
           identifier={identifier}
           value={item.value}
           label={item.label}

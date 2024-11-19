@@ -5,9 +5,6 @@ import { Label } from "@/components/ui/label";
 import { Component, DataType, getData, getTypeAndValues } from "./utils";
 
 export type Field = {
-  id: number;
-  formId: number;
-  sectionId?: number;
   display: string;
   type: string;
   identifier: string;
@@ -39,13 +36,15 @@ export function RenderComponent(props: Props) {
     (async () => {
       if (fields.type === "select") {
         const response = await getData(fields?.data, fields);
+        if (!response) return;
+
         const data = getTypeAndValues(fields.data || "");
 
         if (data?.type === DataType.Array) {
           setData(
             response.map((item) => ({
-              id: createSlug(item?.trim()),
-              title: item?.trim(),
+              id: createSlug(String(item ?? "").trim()),
+              title: String(item ?? "").trim(),
             }))
           );
         }
@@ -56,19 +55,20 @@ export function RenderComponent(props: Props) {
 
       if (fields.type === "radio" || fields.type === "checkbox") {
         const response = await getData(fields?.data, fields);
+        if (!response) return;
 
         const data = getTypeAndValues(fields.data || "");
         if (data?.type === DataType.Array) {
           setData(
             response.map((item) => ({
-              value: createSlug(item?.trim()),
-              label: item?.trim(),
+              value: createSlug(String(item ?? "").trim()),
+              label: String(item ?? "").trim(),
             }))
           );
         }
         if (data?.type === DataType.Table) {
           setData(
-            response.map((item) => ({
+            response.map((item: any) => ({
               value: item.id,
               label: item.title,
             }))
