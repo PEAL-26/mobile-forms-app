@@ -18,12 +18,22 @@ import { connectionDrizzle } from "@/db";
 
 import migrations from "../../drizzle/migrations";
 import { useSeeds } from "@/hooks/use-seeds";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 SplashScreen.preventAutoHideAsync();
+// SplashScreen.setOptions({
+//   duration: 1000,
+//   fade: true,
+// });
+
+const queryClient = new QueryClient();
 
 export default function RootLayout() {
   const migration = useMigrations(connectionDrizzle, migrations);
-  const seed = useSeeds({ connection: connectionDrizzle, migrated: migration.success });
+  const seed = useSeeds({
+    connection: connectionDrizzle,
+    migrated: migration.success,
+  });
 
   const [loaded] = useFonts({
     SpaceMono: require("../../assets/fonts/SpaceMono-Regular.ttf"),
@@ -39,7 +49,8 @@ export default function RootLayout() {
     return (
       <View className="flex-1 justify-center items-center">
         <Text>
-          Oops! Migration error: {migration?.error?.message || seed.error?.message}
+          Oops! Migration error:{" "}
+          {migration?.error?.message || seed.error?.message}
         </Text>
       </View>
     );
@@ -59,20 +70,22 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <SafeAreaView style={{ flex: 1 }}>
           <AutocompleteDropdownContextProvider>
-            <Stack initialRouteName="(app)/index">
-              <Stack.Screen
-                name="(app)/index"
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="(app)/register"
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="(app)/configuracoes"
-                options={{ headerShown: false }}
-              />
-            </Stack>
+            <QueryClientProvider client={queryClient}>
+              <Stack initialRouteName="(app)/index">
+                <Stack.Screen
+                  name="(app)/index"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="(app)/register"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="(app)/configuracoes"
+                  options={{ headerShown: false }}
+                />
+              </Stack>
+            </QueryClientProvider>
             <StatusBar style="dark" translucent animated />
           </AutocompleteDropdownContextProvider>
         </SafeAreaView>

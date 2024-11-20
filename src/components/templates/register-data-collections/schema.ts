@@ -15,15 +15,15 @@ const fieldSchema = z.object({
       name: z.string(),
       description: z.string().optional(),
     })
-    .optional(),
+    .nullable(),
   display: z.string(),
   type: z.nativeEnum(FIELD_TYPE_ENUM),
   identifier: z.string(),
-  data: z.string().optional(),
-  dataFields: z.string().optional(),
-  dataWhere: z.string().optional(),
-  extraField: z.string().optional(),
-  description: z.string().optional(),
+  data: z.string().nullable(),
+  dataFields: z.string().nullable(),
+  dataWhere: z.string().nullable(),
+  extraField: z.string().nullable(),
+  description: z.string().nullable(),
 });
 
 const collectionSchema = z.object({
@@ -48,3 +48,4 @@ export type DataCollectionFormSchemaType = z.infer<
   typeof dataCollectionFormSchema
 >;
 export type DataCollectionSchemaType = z.infer<typeof dataCollectionSchema>;
+export type DataCollectionFieldSchemaType = z.infer<typeof fieldSchema>;

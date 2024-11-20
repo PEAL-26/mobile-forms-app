@@ -6,7 +6,11 @@ import {
   ListPaginateConfigs,
   PaginatedResult,
 } from "./types";
-import { generateQueryFields, generateWhereClause } from "./utils";
+import {
+  generateIncludes,
+  generateQueryFields,
+  generateWhereClause,
+} from "./utils";
 
 export class DatabaseSQLite implements IDatabase {
   constructor(private connection: SQLiteDatabase) {}
@@ -39,13 +43,19 @@ export class DatabaseSQLite implements IDatabase {
     tableName: string,
     configs?: ListPaginateConfigs
   ): Promise<PaginatedResult<T>> {
-    const { select, where, size = 10, page = 1 } = configs || {};
+    const { select, where, include, size = 10, page = 1 } = configs || {};
     const fields = generateQueryFields(select);
+    const includes = generateIncludes(tableName, include);
     const offset = (page - 1) * size;
 
     const whereClause = generateWhereClause(where);
-    const baseQuery = `SELECT ${fields} FROM ${tableName} ${whereClause}`;
+    const baseQuery = `SELECT ${fields
+      .map((field) => `${tableName}.${field}`)
+      .join(", ")}${
+      includes.fields ? `, ${includes.fields}` : ""
+    } FROM ${tableName} ${includes.joins} ${whereClause}`;
 
+    console.log(baseQuery);
     // Consulta para contar o total de itens
     const totalItemsQuery = `SELECT COUNT(*) as count FROM (${baseQuery}) as total_count_query`;
     const totalItemsResult = await this.connection.getAllAsync<{

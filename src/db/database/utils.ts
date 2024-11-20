@@ -1,7 +1,12 @@
-import { DatabaseConfigSelect } from "./types";
+import {
+  DatabaseConfigSelect,
+  DatabaseInclude,
+  DatabaseWhere,
+  DatabaseWhereField,
+} from "./types";
 
 export function generateQueryFields(select?: DatabaseConfigSelect) {
-  if (!select) return "*";
+  if (!select) return ["*"];
   let selectFields: string[] = [];
   const fields = Object.entries(select);
 
@@ -12,28 +17,68 @@ export function generateQueryFields(select?: DatabaseConfigSelect) {
     }
     if (typeof value === "object") {
       const { as } = value;
-      selectFields.push(`${field} AS ${as}`);
+      selectFields.push(`${field}${as ? ` AS ${as}` : ""}`);
       continue;
     }
   }
-  return selectFields.join(",");
+
+  return selectFields;
 }
 
-export function generateWhereClause(where?: Record<string, any>): string {
+export function generateWhereClause(where?: DatabaseWhere): string {
   if (!where) return "";
 
   const conditions = Object.entries(where).map(([key, condition]) => {
-    if (typeof condition === "object" && condition.value) {
-      const column = condition.as || key;
-      const value = condition.value;
+    let column = key;
+    let value: DatabaseWhereField = condition;
+    if (typeof condition === "object") {
+      column = condition.as || key;
+      value = condition.value !== undefined ? condition.value : undefined;
+    }
 
-      // SQL para case insensitive e ignora acentos (exemplo PostgreSQL)
+    if (value !== undefined) {
       return `LOWER(${column}) LIKE LOWER('%${value}%')`;
     }
+
     return "";
   });
 
   return conditions.length > 0
     ? `WHERE ${conditions.filter(Boolean).join(" AND ")}`
     : "";
+}
+
+let joins: string[] = [];
+let fields: string[] = [];
+export function generateIncludes(
+  tableMain: string,
+  include?: DatabaseInclude,
+  recursive = false
+) {
+  if (!recursive) {
+    joins = [];
+    fields = [];
+  }
+
+  if (include) {
+    const includes = Object.entries(include);
+    for (const [key, values] of includes) {
+      const { as, include, select } = values;
+      const queryFields = generateQueryFields(select)
+        .map((field) => `${as}.${field}`)
+        .join(", ");
+      const tableName = `${key} AS ${as}`;
+
+      const join = `INNER JOIN ${tableName} ON ${as}.id = ${tableMain}.${as}_id`;
+
+      fields.push(queryFields);
+      joins.push(join);
+
+      if (include) {
+        generateIncludes(key, include, true);
+      }
+    }
+  }
+
+  return { fields: fields.join(", "), joins: joins.join("\n") };
 }

@@ -15,7 +15,7 @@ export default function HomeScreen() {
     <>
       <View className="relative flex-1">
         {/* Header */}
-        <View className="flex-row flex items-center w-full justify-between  bg-white gap-3 border-b border-b-gray-200 elevation-lg p-3">
+        <View className="flex-row flex items-center w-full justify-between  bg-white gap-3 border-b border-b-gray-200 elevation-lg p-3 h-16">
           <View className="flex-row flex items-center gap-3">
             <Image
               source={require("../../../assets/images/logo.png")}

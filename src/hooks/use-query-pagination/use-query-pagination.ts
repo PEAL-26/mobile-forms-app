@@ -1,8 +1,11 @@
 import {
+  InfiniteData,
   keepPreviousData,
   useInfiniteQuery as useInfiniteQueryRQ,
 } from "@tanstack/react-query";
 import { QueryFnContext, QueryPaginationProps } from "./types";
+import { PaginatedResult } from "@/db/database";
+import { useMemo } from "react";
 
 export function useQueryPagination<T>(props: QueryPaginationProps<T>) {
   const { queryKey, fn, ...restProps } = props;
@@ -11,8 +14,23 @@ export function useQueryPagination<T>(props: QueryPaginationProps<T>) {
     return fn({ page, ...rest });
   };
 
+  const select = (
+    data?: InfiniteData<PaginatedResult<T> | undefined, number>
+  ) => {
+    if (!data) return undefined;
+
+    return {
+      ...data.pages.slice(-1)[0],
+      data: data.pages.flatMap((page) => {
+        if (!page?.data) return [];
+
+        return [...page.data];
+      }),
+    };
+  };
+
   const {
-    data = [],
+    data: response,
     hasNextPage,
     hasPreviousPage,
     isLoading: responseIsLoading,
@@ -30,7 +48,7 @@ export function useQueryPagination<T>(props: QueryPaginationProps<T>) {
     initialPageParam: 1,
     getNextPageParam: (lastPage) => lastPage?.next ?? undefined,
     getPreviousPageParam: (firstPage) => firstPage?.prev ?? undefined,
-    select: (data) => data?.pages?.flatMap((page) => page?.data) ?? [],
+    select,
     refetchOnWindowFocus: false,
     placeholderData: keepPreviousData,
     ...restProps,
@@ -47,9 +65,22 @@ export function useQueryPagination<T>(props: QueryPaginationProps<T>) {
       fetchPreviousPage();
     }
   };
+
   const isLoading =
     responseIsLoading || isFetchingNextPage || isFetchingPreviousPage;
+
+  const { data, ...pagination } = useMemo(() => {
+    const { currentPage, totalPages, totalItems, next, prev } = response || {};
+    const data = response?.data || [];
+    return { currentPage, totalPages, totalItems, next, prev, data };
+  }, [response]);
+
+  if (isError) {
+    console.error(rest.error);
+  }
+
   return {
+    ...pagination,
     data,
     isLoading: responseIsLoading,
     isLoadingAll: isLoading,

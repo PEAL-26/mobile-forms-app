@@ -22,7 +22,7 @@ export default function RegisterScreen() {
       <View className="flex-1 relative">
         <View
           style={{ display: isLoading ? "none" : "flex" }}
-          className="flex flex-row justify-between items-center p-3 bg-white gap-4"
+          className="flex flex-row justify-between items-center p-3 bg-white gap-4 h-12"
         >
           <View className="flex-1">
             <Button

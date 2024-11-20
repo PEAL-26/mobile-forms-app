@@ -9,7 +9,9 @@ export const sectionSchema = createInsertSchema(section);
 export type SectionSchemaType = z.infer<typeof sectionSchema>;
 
 export const formFieldSchema = createInsertSchema(formField);
+export const formFieldSelectSchema = createSelectSchema(formField);
 export type FormFieldSchemaType = z.infer<typeof formFieldSchema>;
+export type FormFieldSelectSchemaType = z.infer<typeof formFieldSelectSchema>;
 
 export const dataCollectionSchema = createInsertSchema(dataCollection);
 export type DataCollectionSchemaType = z.infer<typeof dataCollectionSchema>;

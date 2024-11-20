@@ -32,13 +32,7 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      "expo-sqlite",
-      [
-        "expo-document-picker",
-        {
-          "iCloudContainerEnvironment": "Production"
-        }
-      ]
+      "expo-sqlite"
     ],
     "experiments": {
       "typedRoutes": true

@@ -9,11 +9,11 @@ export type Field = {
   display: string;
   type: FIELD_TYPE_ENUM;
   identifier: string;
-  data?: string;
-  dataFields?: string;
-  dataWhere?: string;
-  extraField?: string;
-  description?: string;
+  data?: string | null;
+  dataFields?: string | null;
+  dataWhere?: string | null;
+  extraField?: string | null;
+  description?: string | null;
 };
 
 interface Props {
@@ -87,7 +87,7 @@ export function RenderComponent(props: Props) {
       <Label className="text-base">{fields.display}</Label>
       <Component
         type={fields.type}
-        extras={fields?.extraField}
+        extras={fields?.extraField || undefined}
         identifier={fields.identifier}
         data={data}
         defaultData={defaultData}

@@ -1,5 +1,6 @@
 import { useFieldArray, useForm } from "react-hook-form";
 import {
+  DataCollectionFieldSchemaType,
   dataCollectionSchema,
   DataCollectionSchemaType,
   DataUpdate,
@@ -9,7 +10,12 @@ import { fieldsSeed, sectionsSeed } from "@/db/data";
 import { useCallback, useEffect, useState } from "react";
 import { RegisterDataCollectionsProps } from "./types";
 import { Alert } from "react-native";
-import { db, FIELD_TYPE_ENUM } from "@/db";
+import { db, FIELD_TYPE_ENUM, FormFieldSelectSchemaType } from "@/db";
+import { useQueryPagination } from "@/hooks/use-query-pagination";
+import {
+  FormFieldListResponseData,
+  useFormFieldsListing,
+} from "./use-listing-form-fields";
 
 // TODO START remover essa linha posteriormente
 type QueryDataProps = {
@@ -32,7 +38,7 @@ function useQueryData(props?: QueryDataProps) {
       dataWhere: item?.dataWhere,
       extraField: item?.extraField,
       description: item?.description,
-    })).slice(0, 1),
+    })),
   };
 
   return { response };
@@ -61,7 +67,19 @@ export function useRegister(props: RegisterDataCollectionsProps) {
     name: "collections",
   });
 
-  const { response } = useQueryData();
+  // const { response } = useQueryData();
+  const {
+    data,
+    isEmpty,
+    isError,
+    isFetching,
+    isLoadingAll,
+    totalItems,
+    refetch,
+    loadNextPageData,
+  } = useFormFieldsListing({
+    formId: collectionsForm?.id,
+  });
 
   const handleSubmitOnConfirm = async (input: DataCollectionSchemaType) => {
     const data = input.collections.map((item) => ({
@@ -75,7 +93,9 @@ export function useRegister(props: RegisterDataCollectionsProps) {
       setIsSaving(true);
       // await db.insertBulk(data);
 
-      setTimeout(()=>{   setIsSaving(false);}, 1000)
+      setTimeout(() => {
+        setIsSaving(false);
+      }, 1000);
     } catch (error) {
       Alert.alert(
         "Oops! Falha ao guardar!",
@@ -136,28 +156,59 @@ export function useRegister(props: RegisterDataCollectionsProps) {
     loadingFormToRender(false);
   }, [loadingFormToRender]);
 
+  const startData = (props: Omit<FormFieldListResponseData, "formFieldId">) => {
+    if (props.type === FIELD_TYPE_ENUM.number) {
+      return 0;
+    }
+
+    if (props.type === FIELD_TYPE_ENUM.boolean) {
+      return false;
+    }
+
+    if (props.type === FIELD_TYPE_ENUM.checkbox) {
+      // Multipla escolha
+      return {};
+    }
+
+    if (props.type === FIELD_TYPE_ENUM.radio) {
+      // Única escolha
+      return {};
+    }
+
+    if (props.type === FIELD_TYPE_ENUM.select) {
+      // Única escolha
+      return {};
+    }
+
+    return "";
+  };
+
   useEffect(() => {
-    loadingFormToRender(true);
-    response.data.forEach((item) => {
+    for (const item of data) {
       append({
-        fields: { ...item, formFieldId: item.id },
-        value: "",
+        fields: {
+          ...item,
+          formFieldId: item.id,
+          section: null,
+        },
+        value: startData(item),
       });
-    });
-    loadingFormToRender(false);
-  }, [append, loadingFormToRender, response]);
+    }
+  }, [append, data]);
 
   return {
     collections,
     form,
-    response,
     isLoadingPage,
     handleSubmit: form.handleSubmit(handleSubmit),
     handleUpdate,
-    isLoadingAll: false,
-    isEmpty: false,
-    refetch: () => {},
-    loadNextPageData: () => {},
+    isLoadingAll,
+    isEmpty,
+    isError,
+    refetch,
+    loadNextPageData,
     isSaving,
+    isFetching,
+    totalItems,
   };
 }

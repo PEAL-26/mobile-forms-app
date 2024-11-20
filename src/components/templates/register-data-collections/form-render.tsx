@@ -16,18 +16,19 @@ type Default = {
 
 type Fields = {
   identifier: string;
-  section?: Default;
+  section?: Default | null;
   display: string;
   type: FIELD_TYPE_ENUM;
-  data?: string;
-  dataFields?: string;
-  dataWhere?: string;
-  extraField?: string;
-  description?: string;
+  data?: string | null;
+  dataFields?: string | null;
+  dataWhere?: string | null;
+  extraField?: string | null;
+  description?: string | null;
 };
 
 type Item = {
   fields: Fields;
+  value?: any;
 };
 
 interface FormRenderProps {

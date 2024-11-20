@@ -1,9 +1,13 @@
-import { Modal, Text, View } from "react-native";
-import { Button } from "../ui/button";
-import { XIcon } from "lucide-react-native";
 import { useState } from "react";
-import * as DocumentPicker from "expo-document-picker";
+import { Modal, Text, View } from "react-native";
+import * as FileSystem from "expo-file-system";
+import { XIcon } from "lucide-react-native";
+import * as Linking from "expo-linking";
+import { File, Paths } from "expo-file-system/next";
+
 import { exportToExcel } from "@/helpers/xlsx";
+import { ensureDirExists, moveTo, writeFile } from "@/helpers/file";
+import { Button } from "../ui/button";
 
 interface Props {
   open?: boolean;
@@ -26,14 +30,29 @@ export function ExportDataModal(props: Props) {
     // setStart(true);
 
     try {
-      const data = exportToExcel([
-        { id: 1, name: "João" },
-        { id: 2, name: "Paulo" },
-      ]);
+      const data = await exportToExcel([{ id: 1, name: "Alguma coisa" }]);
+      const directoryPath = await ensureDirExists("mobile-forms-exports");
+      const fileName = `exported-${Date.now()}.txt`;
+      const filePath = `${directoryPath}/${fileName}`;
+      await writeFile(filePath, data, FileSystem.EncodingType.Base64);
 
-      console.log(data);
+      //       // const to = FileSystem.documentDirectory
+      //       //   ? `${FileSystem.documentDirectory}mobile-forms/`
+      //       //   : "";
+      //       const content = await FileSystem.readAsStringAsync(filePath);
+      // console.log(content)
+      //       // if (to) {
+      //       //   // const uri = await moveTo(filePath, to);
+      //       //   const canOpen = await Linking.canOpenURL(filePath);
+      //       //   console.log({canOpen})
+      //       //   if (canOpen) {
+      await Linking.openURL(filePath);
+      //       //   }
+
+      //         console.log("Ficheiro movido com sucesso.");
+      // // }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

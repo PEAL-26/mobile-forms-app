@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { RefreshControl } from "react-native";
 import { ActivityIndicator, useWindowDimensions, View } from "react-native";
 
 import { cn } from "@/lib/utils";
@@ -12,6 +11,7 @@ import { FormRender } from "./form-render";
 import { useRegister } from "./use-register";
 import { RegisterDataCollectionsProps } from "./types";
 import { Loading } from "@/components/ui/loading";
+import { setFlashListLoader } from "./flash-list-loader";
 
 export function RegisterDataCollections(props: RegisterDataCollectionsProps) {
   const window = useWindowDimensions();
@@ -24,7 +24,10 @@ export function RegisterDataCollections(props: RegisterDataCollectionsProps) {
     handleUpdate,
     isLoadingAll,
     isEmpty,
+    isFetching,
+    isError,
     isSaving,
+    totalItems,
     refetch,
     loadNextPageData,
   } = useRegister(props);
@@ -42,24 +45,18 @@ export function RegisterDataCollections(props: RegisterDataCollectionsProps) {
       <FlashList
         data={collections}
         refreshing={isLoadingAll}
-        refreshControl={
-          <RefreshControl
-            refreshing={isLoadingAll}
-            onRefresh={refetch}
-            colors={["#000", "#FFF"]}
-          />
-        }
         renderItem={({ item }) => (
           <FormRender item={item} onUpdate={handleUpdate} />
         )}
         keyExtractor={(item) => item.fields.identifier}
-        // ListHeaderComponent={header}
-        // ListFooterComponent={setFlashListLoader(isFetching, isError, refetch)}
+        ListFooterComponent={setFlashListLoader(isFetching, isError, refetch, {
+          height: collections.length === 0 ? window.height - 80 : undefined,
+        })}
         ListEmptyComponent={
           isEmpty ? (
             <View
               style={{
-                height: window.height - 360,
+                height: window.height - 80,
                 justifyContent: "center",
                 alignItems: "center",
               }}
@@ -77,19 +74,24 @@ export function RegisterDataCollections(props: RegisterDataCollectionsProps) {
         }}
         ListFooterComponentStyle={{ paddingVertical: 16 }}
         // estimatedItemSize={132}
-        onEndReachedThreshold={0.3}
+        onEndReachedThreshold={0.5}
         showsVerticalScrollIndicator={false}
         onEndReached={loadNextPageData}
       />
 
       <View className="absolute bottom-0 left-0 right-0 flex flex-row items-center justify-end p-3 ">
-        <Button
-          className={cn("rounded p-2  px-3 bg-blue-700")}
-          textClassName="text-white"
-          onPress={handleSubmit}
-        >
-          Guardar
-        </Button>
+        {!isError &&
+          !isFetching &&
+          collections.length > 0 &&
+          collections.length === totalItems && (
+            <Button
+              className={cn("rounded p-2  px-3 bg-blue-700")}
+              textClassName="text-white"
+              onPress={handleSubmit}
+            >
+              Guardar
+            </Button>
+          )}
       </View>
 
       <Loading show={isSaving} />

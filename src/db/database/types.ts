@@ -3,9 +3,31 @@ export type SelectField = boolean | { as?: string };
 export type DatabaseConfigSelect = {
   [key: string]: SelectField;
 };
+
+export type DatabaseWhereFieldValue = string | number | boolean | undefined;
+export type DatabaseWhereField =
+  | DatabaseWhereFieldValue
+  | {
+      value: DatabaseWhereFieldValue;
+      as?: string;
+    };
+
+export type DatabaseWhere = {
+  [key: string]: DatabaseWhereField;
+};
+
+export type DatabaseInclude = {
+  [key: string]: {
+    as: string;
+    select?: DatabaseConfigSelect;
+    include?: DatabaseInclude;
+  };
+};
+
 export type DatabaseConfig = {
   select?: DatabaseConfigSelect;
-  where?: Record<string, any>;
+  where?: DatabaseWhere;
+  include?: DatabaseInclude;
 };
 
 export interface ListPaginateConfigs extends DatabaseConfig {
