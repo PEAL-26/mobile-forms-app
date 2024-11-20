@@ -76,10 +76,11 @@ export const fieldsSeed = [
     id: 3,
     formId: 1,
     sectionId: 1,
-    identifier: "4",
+    identifier: "3",
     display: "Categoria do Municipio (Estrutura Orgânica Tipo)",
     type: "select",
     data: "array: [A;; B;; C;; D;; E]",
+    description: "Estrutura orgânica",
   },
 
   //Section02
@@ -476,7 +477,7 @@ export const fieldsSeed = [
     identifier: "50",
     sectionId: 6,
     display: "Nº Total de Estruturas Pre Escolar",
-    type: 'number'
+    type: "number",
   },
   {
     id: 51,
@@ -484,7 +485,7 @@ export const fieldsSeed = [
     identifier: "51",
     sectionId: 6,
     display: "Nº Total de Escolas do Ensino Primário",
-    type: 'number'
+    type: "number",
   },
   {
     id: 52,
@@ -492,7 +493,7 @@ export const fieldsSeed = [
     identifier: "52",
     sectionId: 6,
     display: "Nº Total de Escolas do Ensino Secundário",
-    type: 'number'
+    type: "number",
   },
   {
     id: 53,
@@ -500,7 +501,7 @@ export const fieldsSeed = [
     identifier: "53",
     sectionId: 6,
     display: "Nº Total de Escolas de Ensino Superior",
-    type: 'number'
+    type: "number",
   },
 
   // Section07
@@ -510,7 +511,7 @@ export const fieldsSeed = [
     identifier: "54",
     sectionId: 7,
     display: "Nº Total de Hospitais",
-    type: 'number'
+    type: "number",
   },
   {
     id: 55,
@@ -518,7 +519,7 @@ export const fieldsSeed = [
     identifier: "55",
     sectionId: 7,
     display: "Nº Totais de Centros de Saúde",
-    type: 'number'
+    type: "number",
   },
   {
     id: 56,
@@ -526,7 +527,7 @@ export const fieldsSeed = [
     identifier: "56",
     sectionId: 7,
     display: "Nº Total de Postos de Saúde",
-    type: 'number'
+    type: "number",
   },
 
   // Section08
@@ -536,7 +537,7 @@ export const fieldsSeed = [
     identifier: "57",
     sectionId: 7,
     display: "Comando Provincial",
-    type: 'boolean'
+    type: "boolean",
   },
   {
     id: 58,
@@ -544,7 +545,7 @@ export const fieldsSeed = [
     identifier: "58",
     sectionId: 7,
     display: "Comando Municipal",
-    type: 'boolean'
+    type: "boolean",
   },
   {
     id: 59,
@@ -552,8 +553,9 @@ export const fieldsSeed = [
     identifier: "59",
     sectionId: 7,
     display: "Esquadra Policial",
-    type: 'boolean',
-    extraField: '{"type":"number", "display": "Quantos Esquadras existem?", "trigger":true}',
+    type: "boolean",
+    extraField:
+      '{"type":"number", "display": "Quantos Esquadras existem?", "trigger":true}',
   },
   {
     id: 60,
@@ -561,8 +563,9 @@ export const fieldsSeed = [
     identifier: "60",
     sectionId: 7,
     display: "Posto Policial",
-    type: 'boolean',
-    extraField: '{"type":"number", "display": "Quantos Postos Policiais existem?", "trigger":true}',
+    type: "boolean",
+    extraField:
+      '{"type":"number", "display": "Quantos Postos Policiais existem?", "trigger":true}',
   },
   {
     id: 61,
@@ -570,7 +573,8 @@ export const fieldsSeed = [
     identifier: "61",
     sectionId: 7,
     display: "Posto de Bombeiros",
-    type: 'boolean',
-    extraField: '{"type":"number", "display": "Quantos Postos de Bombeiros existem?", "trigger":true}',
+    type: "boolean",
+    extraField:
+      '{"type":"number", "display": "Quantos Postos de Bombeiros existem?", "trigger":true}',
   },
 ];

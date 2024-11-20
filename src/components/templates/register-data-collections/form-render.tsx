@@ -1,8 +1,9 @@
-import { Fragment, memo, useCallback } from "react";
+import { memo, useCallback } from "react";
 import { View } from "react-native";
 import debounce from "lodash.debounce";
 import { Text } from "@/components/ui/text";
 import { RenderComponent } from "@/components/ui/render-component";
+import { FIELD_TYPE_ENUM } from "@/db";
 
 var lastSection = "";
 var showSection = false;
@@ -17,7 +18,7 @@ type Fields = {
   identifier: string;
   section?: Default;
   display: string;
-  type: string;
+  type: FIELD_TYPE_ENUM;
   data?: string;
   dataFields?: string;
   dataWhere?: string;
@@ -43,15 +44,16 @@ const FormRender = memo((props: FormRenderProps) => {
     showSection = false;
   }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedOnUpdate = useCallback(
     debounce((identifier: string, data: any) => {
       onUpdate?.(identifier, data);
     }, 300),
-    [onUpdate]
+    []
   );
 
   return (
-    <Fragment>
+    <View className="px-3 mt-4">
       {showSection && (
         <View className="flex flex-row items-center gap-2 my-5">
           <View className="h-[1px] bg-gray-300 w-full flex-1" />
@@ -62,7 +64,6 @@ const FormRender = memo((props: FormRenderProps) => {
         </View>
       )}
       <RenderComponent
-        key={item.fields.identifier}
         fields={item.fields}
         // defaultData={item.value}
         onChange={(value) =>
@@ -72,7 +73,7 @@ const FormRender = memo((props: FormRenderProps) => {
           debouncedOnUpdate(item.fields.identifier, { value: extras })
         }
       />
-    </Fragment>
+    </View>
   );
 });
 

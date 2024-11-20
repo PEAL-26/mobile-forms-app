@@ -3,6 +3,7 @@ import { View } from "react-native";
 import { FieldType } from "@/db";
 import { Label } from "../../label";
 import { getComponentByType } from "./parts/utils";
+import { parseJSON } from "@/helpers/json";
 
 interface ComponentExtraProps {
   parentIdentifier?: string;
@@ -17,7 +18,7 @@ export function ComponentExtra(props: ComponentExtraProps) {
   const { parentIdentifier, extras, type, value, onChange, defaultData } =
     props;
 
-  const fields = parseJSON(extras);
+  const fields = parseJSON<Extras>(extras);
   const triggerValue = getValueByType(type, value);
   const showComponent = checkTrigger(triggerValue, fields?.trigger);
 
@@ -44,7 +45,7 @@ export function ComponentExtra(props: ComponentExtraProps) {
         identifier: parentIdentifier,
         ...parentValue,
       };
-      
+
       onChange?.({ value: valueExtra, display: fields?.display, parent });
     },
   });
@@ -63,15 +64,6 @@ type Extras = {
   trigger: Trigger;
   type: FieldType;
 };
-
-export function parseJSON(data?: string): Extras | undefined {
-  if (!data) return undefined;
-  try {
-    return JSON.parse(String(data));
-  } catch (error: any) {
-    throw new Error(`JSONParse: ${data} \n ${error.message}`);
-  }
-}
 
 export function checkTrigger(value: string | undefined, trigger?: Trigger) {
   if (!value || !trigger) return false;

@@ -1,6 +1,8 @@
 // import { db } from "@/db";
 
 import { db } from "@/db";
+import { DatabaseConfig, DatabaseConfigSelect } from "@/db/database";
+import { parseJSON } from "@/helpers/json";
 
 export enum DataType {
   Table = "table",
@@ -19,17 +21,14 @@ export type DataTableResponse = {
 
 export async function getData(data?: string, configs?: Config) {
   if (!data) return [];
-
+  
   const { type, values = "" } = getTypeAndValues(data) || {};
-
   if (type === DataType.Table) {
     if (!configs?.dataFields) {
       throw new Error("Data type {table} is required set dataFields");
     }
-    const query = createQuery(values, configs);
-    const data = await getDataTable(query);
-    console.log(data);
-
+    const dataTableConfigs = getDataTableConfigs(configs);
+    const data = await getDataTable(values, dataTableConfigs);
     return data;
   }
 
@@ -83,15 +82,33 @@ function createQuery(tableName: string, configs?: Config) {
   return `select ${fields} from ${tableName}`;
 }
 
-async function getDataTable(sql: string) {
-  // if (!db) {
-  //   throw new Error("Database not set");
-  // }
+type Field = {
+  identifier: string;
+  title: string;
+};
+function getDataTableConfigs(configs: Config) {
+  const { dataFields, dataWhere } = configs;
+
+  let fieldObj: DatabaseConfigSelect = {};
+  const fieldsParse = parseJSON<Field>(dataFields);
+
+  if (fieldsParse) {
+    fieldObj[fieldsParse.identifier] = {
+      as: "id",
+    };
+    fieldObj[fieldsParse.title] = {
+      as: "title",
+    };
+  }
+
+  return { select: fieldObj, where: {} };
+}
+
+async function getDataTable(tableName: string, configs: DatabaseConfig) {
   try {
-    const data = await db.query<DataTableResponse>(sql);
-    return data;
+    return db.listAll<DataTableResponse>(tableName, configs);
   } catch (error) {
-    console.error(error);
+    console.error(`getDataTableError: ${JSON.stringify(error)}`);
   }
 
   return [];

@@ -5,31 +5,13 @@ import {
   DataUpdate,
 } from "./schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { fieldsSeed, formsSeed } from "@/db/data";
+import { fieldsSeed, sectionsSeed } from "@/db/data";
 import { useCallback, useEffect, useState } from "react";
 import { RegisterDataCollectionsProps } from "./types";
 import { Alert } from "react-native";
+import { db, FIELD_TYPE_ENUM } from "@/db";
 
-export const DATA = {
-  form: formsSeed[0],
-  collections: fieldsSeed.map((field: any) => ({
-    fields: {
-      id: field.id,
-      formId: field.formId,
-      sectionId: field?.sectionId,
-      display: field.display,
-      type: field.type,
-      identifier: field.identifier,
-      data: field?.data,
-      dataFields: field?.dataFields,
-      dataWhere: field?.dataWhere,
-      extraField: field?.extraField,
-      description: field?.description,
-    },
-    value: "",
-  })),
-};
-
+// TODO START remover essa linha posteriormente
 type QueryDataProps = {
   formId?: string;
 };
@@ -39,15 +21,28 @@ function useQueryData(props?: QueryDataProps) {
 
   // Aplicar a pesquisa dos campos pro formulário
   let response = {
-    data: DATA.collections,
+    data: fieldsSeed.map((item) => ({
+      id: item.id,
+      section: sectionsSeed.find(({ id }) => id === item.sectionId),
+      display: item.display,
+      type: item.type as FIELD_TYPE_ENUM,
+      identifier: item.identifier,
+      data: item.data,
+      dataFields: item?.dataFields,
+      dataWhere: item?.dataWhere,
+      extraField: item?.extraField,
+      description: item?.description,
+    })).slice(0, 1),
   };
 
   return { response };
 }
+// TODO END remover essa linha posteriormente
 
 export function useRegister(props: RegisterDataCollectionsProps) {
   const { form: collectionsForm, onLoading } = props;
   const [isLoadingPage, setIsLoadingPage] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
   const form = useForm<DataCollectionSchemaType>({
     resolver: zodResolver(dataCollectionSchema),
@@ -57,15 +52,39 @@ export function useRegister(props: RegisterDataCollectionsProps) {
     },
   });
 
-  const { fields: collections, update } = useFieldArray({
+  const {
+    fields: collections,
+    update,
+    append,
+  } = useFieldArray({
     control: form.control,
     name: "collections",
   });
 
   const { response } = useQueryData();
 
-  const handleSubmitOnConfirm = (data: DataCollectionSchemaType) => {
-    console.log(data);
+  const handleSubmitOnConfirm = async (input: DataCollectionSchemaType) => {
+    const data = input.collections.map((item) => ({
+      formFieldId: item.fields.formFieldId,
+      field: item.fields.display,
+      type: item.fields.type,
+      value: item.value,
+    }));
+
+    try {
+      setIsSaving(true);
+      // await db.insertBulk(data);
+
+      setTimeout(()=>{   setIsSaving(false);}, 1000)
+    } catch (error) {
+      Alert.alert(
+        "Oops! Falha ao guardar!",
+        "Falha ao guardar os dados, tente novamente, se o erro persistir entre em contanto com o suporte."
+      );
+      console.error(error);
+    } finally {
+      // setIsSaving(false);
+    }
   };
 
   const handleSubmit = (data: DataCollectionSchemaType) => {
@@ -92,10 +111,6 @@ export function useRegister(props: RegisterDataCollectionsProps) {
     }
   };
 
-  const onError = (error: any) => {
-    console.error(error);
-  };
-
   const handleUpdate = (identifier: string, data: DataUpdate) => {
     const findIndex = collections.findIndex(
       (c) => c.fields.identifier === identifier
@@ -109,31 +124,40 @@ export function useRegister(props: RegisterDataCollectionsProps) {
     });
   };
 
-  useEffect(() => {
-    setIsLoadingPage(false);
-    onLoading?.(false);
-  }, [onLoading]);
-
-  const loadingFormToRender = useCallback(async () => {
-    // Carregar formulário
-    setIsLoadingPage(false);
-    onLoading?.(false);
-  }, [onLoading]);
+  const loadingFormToRender = useCallback(
+    async (state: boolean) => {
+      setIsLoadingPage(state);
+      onLoading?.(state);
+    },
+    [onLoading]
+  );
 
   useEffect(() => {
-    loadingFormToRender();
-  }, [form, loadingFormToRender]);
+    loadingFormToRender(false);
+  }, [loadingFormToRender]);
+
+  useEffect(() => {
+    loadingFormToRender(true);
+    response.data.forEach((item) => {
+      append({
+        fields: { ...item, formFieldId: item.id },
+        value: "",
+      });
+    });
+    loadingFormToRender(false);
+  }, [append, loadingFormToRender, response]);
 
   return {
     collections,
     form,
     response,
     isLoadingPage,
-    handleSubmit: form.handleSubmit(handleSubmit, onError),
+    handleSubmit: form.handleSubmit(handleSubmit),
     handleUpdate,
     isLoadingAll: false,
     isEmpty: false,
     refetch: () => {},
     loadNextPageData: () => {},
+    isSaving,
   };
 }

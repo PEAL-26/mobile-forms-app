@@ -1,3 +1,4 @@
+import { FIELD_TYPE_ENUM } from "@/db";
 import { z } from "zod";
 
 export type DataUpdate = {
@@ -7,11 +8,16 @@ export type DataUpdate = {
 };
 
 const fieldSchema = z.object({
-  id: z.number(),
-  formId: z.number(),
-  sectionId: z.number().optional(),
+  formFieldId: z.number(),
+  section: z
+    .object({
+      id: z.number(),
+      name: z.string(),
+      description: z.string().optional(),
+    })
+    .optional(),
   display: z.string(),
-  type: z.string(),
+  type: z.nativeEnum(FIELD_TYPE_ENUM),
   identifier: z.string(),
   data: z.string().optional(),
   dataFields: z.string().optional(),

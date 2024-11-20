@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import { Modal } from "react-native";
 import { Input } from "../ui/input";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { ActivityIndicator } from "react-native";
 
 type ItemType = {
@@ -15,16 +15,14 @@ type ItemType = {
   title: string;
 };
 
-interface SelectDataModalProps<T extends ItemType> {
-  data: T[];
-  onSelect?(data: T | null): void;
+interface SelectDataModalProps {
+  data: ItemType[];
+  onSelect?(data: ItemType | null): void;
   open?: boolean;
   onClose?(state: false): void;
 }
 
-export function SelectDataModal<T extends ItemType>(
-  props: SelectDataModalProps<T>
-) {
+export const SelectDataModal = memo((props: SelectDataModalProps) => {
   const { open, onClose, data, onSelect } = props;
   const [isLoading, setIsLoading] = useState(true);
 
@@ -32,9 +30,9 @@ export function SelectDataModal<T extends ItemType>(
     onClose?.(false);
   };
 
-  const handleSelect = (item: T) => {
+  const handleSelect = (item: ItemType) => {
     onSelect?.(item);
-    handleClose()
+    handleClose();
   };
 
   useEffect(() => {
@@ -84,7 +82,9 @@ export function SelectDataModal<T extends ItemType>(
       </Pressable>
     </Modal>
   );
-}
+});
+
+SelectDataModal.displayName = "SelectDataModal";
 
 type RenderItemProps<T extends ItemType> = {
   item: T;

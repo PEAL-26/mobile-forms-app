@@ -10,6 +10,7 @@ export interface ComponentProps {
   defaultDataExtras?: any;
   onChangeExtras?(data: any): void;
   identifier?: string;
+  isLoading?: boolean;
 }
 
 export function Component(props: ComponentProps) {

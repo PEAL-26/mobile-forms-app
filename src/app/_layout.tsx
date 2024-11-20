@@ -2,19 +2,29 @@ import "react-native-gesture-handler";
 import "react-native-reanimated";
 import "../styles/global.css";
 
-import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
-import * as SplashScreen from "expo-splash-screen";
-import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { Stack } from "expo-router";
+import { Text } from "react-native";
+import { useFonts } from "expo-font";
+import { StatusBar } from "expo-status-bar";
+import * as SplashScreen from "expo-splash-screen";
 import { ActivityIndicator, View } from "react-native";
+import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { AutocompleteDropdownContextProvider } from "react-native-autocomplete-dropdown";
+
+import { connectionDrizzle } from "@/db";
+
+import migrations from "../../drizzle/migrations";
+import { useSeeds } from "@/hooks/use-seeds";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const migration = useMigrations(connectionDrizzle, migrations);
+  const seed = useSeeds({ connection: connectionDrizzle, migrated: migration.success });
+
   const [loaded] = useFonts({
     SpaceMono: require("../../assets/fonts/SpaceMono-Regular.ttf"),
   });
@@ -25,10 +35,21 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
-  if (!loaded) {
+  if (migration?.error || seed?.error) {
     return (
       <View className="flex-1 justify-center items-center">
+        <Text>
+          Oops! Migration error: {migration?.error?.message || seed.error?.message}
+        </Text>
+      </View>
+    );
+  }
+
+  if (!loaded || !migration.success || !seed.success) {
+    return (
+      <View className="flex-1 justify-center items-center ">
         <ActivityIndicator color="#000" size="small" />
+        <StatusBar style="dark" translucent animated />
       </View>
     );
   }

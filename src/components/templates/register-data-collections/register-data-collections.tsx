@@ -1,27 +1,20 @@
-import { Fragment, useState } from "react";
-import {
-  ActivityIndicator,
-  ScrollView,
-  useWindowDimensions,
-  View,
-} from "react-native";
+import { useState } from "react";
+import { RefreshControl } from "react-native";
+import { ActivityIndicator, useWindowDimensions, View } from "react-native";
 
-import { AddModal } from "@/components/modals/add-modal";
-import { Text } from "@/components/ui/text";
-import { sectionsSeed } from "@/db/data";
-import { RenderComponent } from "@/components/ui/render-component";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Text } from "@/components/ui/text";
+import { Button } from "@/components/ui/button";
+import { FlashList } from "@/components/ui/flash-list";
+import { AddModal } from "@/components/modals/add-modal";
 
+import { FormRender } from "./form-render";
 import { useRegister } from "./use-register";
 import { RegisterDataCollectionsProps } from "./types";
-import { FormRender } from "./form-render";
-import { FlashList } from "@/components/ui/flash-list";
-import { RefreshControl } from "react-native";
+import { Loading } from "@/components/ui/loading";
 
 export function RegisterDataCollections(props: RegisterDataCollectionsProps) {
   const window = useWindowDimensions();
-
   const [openAddModal, setOpenAddModal] = useState(false);
 
   const {
@@ -31,6 +24,7 @@ export function RegisterDataCollections(props: RegisterDataCollectionsProps) {
     handleUpdate,
     isLoadingAll,
     isEmpty,
+    isSaving,
     refetch,
     loadNextPageData,
   } = useRegister(props);
@@ -71,33 +65,22 @@ export function RegisterDataCollections(props: RegisterDataCollectionsProps) {
               }}
             >
               <Text className="text-sm text-center max-w-[250px]">
-                Este formulário não possui nenhum campo para preenchimento!
+                {props.form
+                  ? "Este formulário não possui nenhum campo para preenchimento!"
+                  : "Selecione um formulário!"}
               </Text>
             </View>
           ) : null
         }
+        getItemType={(item) => {
+          return item.fields.type;
+        }}
         ListFooterComponentStyle={{ paddingVertical: 16 }}
-        estimatedItemSize={132}
+        // estimatedItemSize={132}
         onEndReachedThreshold={0.3}
         showsVerticalScrollIndicator={false}
         onEndReached={loadNextPageData}
       />
-
-      {/* <ScrollView className="flex-1 px-3 pt-3">
-        {collections.length === 0 && (
-          <View
-            style={{ height: window.height }}
-            className="flex-1 justify-center items-center"
-          >
-            <Text>Não foi carregado nenhum formulário!</Text>
-          </View>
-        )}
-        <View className="mb-14 gap-4">
-          {collections.map((item) => (
-            <FormRender item={item} onUpdate={handleUpdate} />
-          ))}
-        </View>
-      </ScrollView> */}
 
       <View className="absolute bottom-0 left-0 right-0 flex flex-row items-center justify-end p-3 ">
         <Button
@@ -108,6 +91,8 @@ export function RegisterDataCollections(props: RegisterDataCollectionsProps) {
           Guardar
         </Button>
       </View>
+
+      <Loading show={isSaving} />
 
       <AddModal open={openAddModal} onClose={setOpenAddModal} />
     </>

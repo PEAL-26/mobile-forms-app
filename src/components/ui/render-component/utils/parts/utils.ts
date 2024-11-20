@@ -16,6 +16,7 @@ export function getComponentByType(props: any) {
     onChange,
     defaultDataExtras,
     onChangeExtras,
+    isLoading
   } = props;
 
   const component = {
@@ -34,7 +35,7 @@ export function getComponentByType(props: any) {
     }),
     text: getTextComponent(defaultData, onChange),
     text_long: getTextLongComponent(defaultData, onChange),
-    select: getSelectComponent(data, defaultData, onChange),
+    select: getSelectComponent({data, defaultData, onChange, isLoading}),
   }[String(type)];
 
   return component;
