@@ -7,9 +7,11 @@ import {
   PaginatedResult,
 } from "./types";
 import {
+  fieldsMap,
   generateIncludes,
   generateQueryFields,
   generateWhereClause,
+  serialize,
 } from "./utils";
 
 export class DatabaseSQLite implements IDatabase {
@@ -23,12 +25,15 @@ export class DatabaseSQLite implements IDatabase {
     // const result = await this.connection.runAsync("");
     throw new Error("Method not implemented.");
   }
+
   update<T>(data: Record<string, any>, id: string): Promise<T> {
     throw new Error("Method not implemented.");
   }
+
   delete<T>(id: string): Promise<T> {
     throw new Error("Method not implemented.");
   }
+
   select<T>(fields: Field<T>, tableName: string): Promise<T[]> {
     throw new Error("Method not implemented.");
   }
@@ -49,13 +54,15 @@ export class DatabaseSQLite implements IDatabase {
     const offset = (page - 1) * size;
 
     const whereClause = generateWhereClause(where);
-    const baseQuery = `SELECT ${fields
-      .map((field) => `${tableName}.${field}`)
-      .join(", ")}${
-      includes.fields ? `, ${includes.fields}` : ""
-    } FROM ${tableName} ${includes.joins} ${whereClause}`;
+    const includesFields =
+      includes.fields.length > 0
+        ? `, ${fieldsMap(includes.fields, includes.tables)}`
+        : "";
 
-    console.log(baseQuery);
+    const baseQuery = `SELECT ${fieldsMap(fields, [
+      tableName,
+    ])}${includesFields} FROM ${tableName} ${includes.joins} ${whereClause}`;
+
     // Consulta para contar o total de itens
     const totalItemsQuery = `SELECT COUNT(*) as count FROM (${baseQuery}) as total_count_query`;
     const totalItemsResult = await this.connection.getAllAsync<{
@@ -65,7 +72,8 @@ export class DatabaseSQLite implements IDatabase {
 
     // Consulta para obter os dados paginados
     const paginatedQuery = `${baseQuery} LIMIT ${size} OFFSET ${offset}`;
-    const data = await this.connection.getAllAsync<T>(paginatedQuery);
+    const result = await this.connection.getAllAsync<T>(paginatedQuery);
+    const data = serialize(result, [tableName, ...includes.tables]) as T[];
 
     // Calcular informações de paginação
     const totalPages = Math.ceil(totalItems / size);

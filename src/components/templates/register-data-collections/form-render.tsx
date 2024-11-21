@@ -5,13 +5,10 @@ import { Text } from "@/components/ui/text";
 import { RenderComponent } from "@/components/ui/render-component";
 import { FIELD_TYPE_ENUM } from "@/db";
 
-var lastSection = "";
-var showSection = false;
-
 type Default = {
   id: number;
   name: string;
-  description?: string;
+  description: string | null;
 };
 
 type Fields = {
@@ -26,23 +23,25 @@ type Fields = {
   description?: string | null;
 };
 
-type Item = {
+interface FormRenderProps {
   fields: Fields;
   value?: any;
-};
-
-interface FormRenderProps {
-  item: Item;
   onUpdate?(identifier: string, data: any): void;
 }
 
+var lastSection = "";
+var showSection = false;
 const FormRender = memo((props: FormRenderProps) => {
-  const { item, onUpdate } = props;
-  if (lastSection !== item.fields?.section?.name) {
-    lastSection = item.fields?.section?.name ?? "";
-    showSection = true;
-  } else {
+  const { fields, onUpdate } = props;
+  if (fields?.section === null) {
     showSection = false;
+  } else {
+    if (lastSection !== fields?.section?.name) {
+      lastSection = fields?.section?.name ?? "";
+      showSection = true;
+    } else {
+      showSection = false;
+    }
   }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -59,19 +58,17 @@ const FormRender = memo((props: FormRenderProps) => {
         <View className="flex flex-row items-center gap-2 my-5">
           <View className="h-[1px] bg-gray-300 w-full flex-1" />
           <Text className="text-gray-600 max-w-[80%] text-center w-fit">
-            {item.fields.section?.name ?? ""}
+            {fields.section?.name ?? ""}
           </Text>
           <View className="h-[1px] bg-gray-300 w-full flex-1" />
         </View>
       )}
       <RenderComponent
-        fields={item.fields}
-        // defaultData={item.value}
-        onChange={(value) =>
-          debouncedOnUpdate(item.fields.identifier, { value })
-        }
+        fields={fields}
+        // defaultData={value}
+        onChange={(value) => debouncedOnUpdate(fields.identifier, { value })}
         onChangeExtras={(extras) =>
-          debouncedOnUpdate(item.fields.identifier, { value: extras })
+          debouncedOnUpdate(fields.identifier, { value: extras })
         }
       />
     </View>

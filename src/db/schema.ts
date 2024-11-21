@@ -43,7 +43,7 @@ export const formField = sqliteTable("forms_fields", {
     .notNull(),
   display: text("display").notNull(),
   type: t.text("type").$type<FieldType>().default("text").notNull(),
-  identifier: text("identifier"),
+  identifier: text("identifier").notNull(),
 
   data: text("data"),
   // array: [Item1;; Item2] || table: TableName

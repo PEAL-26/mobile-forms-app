@@ -13,7 +13,7 @@ const fieldSchema = z.object({
     .object({
       id: z.number(),
       name: z.string(),
-      description: z.string().optional(),
+      description: z.string().nullable(),
     })
     .nullable(),
   display: z.string(),

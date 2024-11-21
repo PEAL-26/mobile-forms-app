@@ -46,9 +46,9 @@ export function RegisterDataCollections(props: RegisterDataCollectionsProps) {
         data={collections}
         refreshing={isLoadingAll}
         renderItem={({ item }) => (
-          <FormRender item={item} onUpdate={handleUpdate} />
+          <FormRender fields={item} onUpdate={handleUpdate} />
         )}
-        keyExtractor={(item) => item.fields.identifier}
+        keyExtractor={(item) => item.identifier}
         ListFooterComponent={setFlashListLoader(isFetching, isError, refetch, {
           height: collections.length === 0 ? window.height - 80 : undefined,
         })}
@@ -70,7 +70,7 @@ export function RegisterDataCollections(props: RegisterDataCollectionsProps) {
           ) : null
         }
         getItemType={(item) => {
-          return item.fields.type;
+          return item.type;
         }}
         ListFooterComponentStyle={{ paddingVertical: 16 }}
         // estimatedItemSize={132}

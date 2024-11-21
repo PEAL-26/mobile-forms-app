@@ -1,6 +1,5 @@
 import { useFieldArray, useForm } from "react-hook-form";
 import {
-  DataCollectionFieldSchemaType,
   dataCollectionSchema,
   DataCollectionSchemaType,
   DataUpdate,
@@ -10,12 +9,9 @@ import { fieldsSeed, sectionsSeed } from "@/db/data";
 import { useCallback, useEffect, useState } from "react";
 import { RegisterDataCollectionsProps } from "./types";
 import { Alert } from "react-native";
-import { db, FIELD_TYPE_ENUM, FormFieldSelectSchemaType } from "@/db";
+import { FIELD_TYPE_ENUM } from "@/db";
 import { useQueryPagination } from "@/hooks/use-query-pagination";
-import {
-  FormFieldListResponseData,
-  useFormFieldsListing,
-} from "./use-listing-form-fields";
+import { listFormsFields, ListFormsFieldsResponseData } from "@/services/forms";
 
 // TODO START remover essa linha posteriormente
 type QueryDataProps = {
@@ -77,8 +73,9 @@ export function useRegister(props: RegisterDataCollectionsProps) {
     totalItems,
     refetch,
     loadNextPageData,
-  } = useFormFieldsListing({
-    formId: collectionsForm?.id,
+  } = useQueryPagination({
+    fn: ({ page }) => listFormsFields({ page, formId: collectionsForm?.id }),
+    queryKey: ["forms_fields"],
   });
 
   const handleSubmitOnConfirm = async (input: DataCollectionSchemaType) => {
@@ -156,7 +153,9 @@ export function useRegister(props: RegisterDataCollectionsProps) {
     loadingFormToRender(false);
   }, [loadingFormToRender]);
 
-  const startData = (props: Omit<FormFieldListResponseData, "formFieldId">) => {
+  const startData = (
+    props: Omit<ListFormsFieldsResponseData, "formFieldId">
+  ) => {
     if (props.type === FIELD_TYPE_ENUM.number) {
       return 0;
     }
@@ -185,19 +184,18 @@ export function useRegister(props: RegisterDataCollectionsProps) {
 
   useEffect(() => {
     for (const item of data) {
-      append({
-        fields: {
-          ...item,
-          formFieldId: item.id,
-          section: null,
-        },
-        value: startData(item),
-      });
+      // append({
+      //   fields: {
+      //     ...item,
+      //     formFieldId: item.id,
+      //   },
+      //   value: startData(item),
+      // });
     }
   }, [append, data]);
 
   return {
-    collections,
+    collections:data,
     form,
     isLoadingPage,
     handleSubmit: form.handleSubmit(handleSubmit),

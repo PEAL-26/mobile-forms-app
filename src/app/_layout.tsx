@@ -9,16 +9,17 @@ import { useFonts } from "expo-font";
 import { StatusBar } from "expo-status-bar";
 import * as SplashScreen from "expo-splash-screen";
 import { ActivityIndicator, View } from "react-native";
+import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { AutocompleteDropdownContextProvider } from "react-native-autocomplete-dropdown";
 
-import { connectionDrizzle } from "@/db";
+import { useSeeds } from "@/hooks/use-seeds";
+import { connectionDrizzle, expoOpenDatabase } from "@/db";
 
 import migrations from "../../drizzle/migrations";
-import { useSeeds } from "@/hooks/use-seeds";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 SplashScreen.preventAutoHideAsync();
 // SplashScreen.setOptions({
@@ -29,6 +30,8 @@ SplashScreen.preventAutoHideAsync();
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
+  useDrizzleStudio(expoOpenDatabase);
+
   const migration = useMigrations(connectionDrizzle, migrations);
   const seed = useSeeds({
     connection: connectionDrizzle,
