@@ -1,6 +1,12 @@
-import { DataTable } from "@/components/ui/data-table";
-import { TabsContent } from "@/components/ui/tabs";
+import { Text } from "@/components/ui/text";
+import { View } from "react-native";
 
 export function SettingDataTablesListing() {
-  return <TabsContent value="dataTables">{/* <DataTable  /> */}</TabsContent>;
+  return (
+    <>
+      <View className="flex-1 items-center justify-center text-center">
+        <Text>Em Desenvolvimento</Text>
+      </View>
+    </>
+  );
 }

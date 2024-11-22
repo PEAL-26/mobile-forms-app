@@ -1,15 +1,15 @@
 import { Modal, Text, View } from "react-native";
-import {  XIcon } from "lucide-react-native";
+import { XIcon } from "lucide-react-native";
 import { Button } from "../../ui/button";
 
 interface Props {
-  fields: any
+  fields: any;
   open?: boolean;
   onClose?(state: false): void;
 }
 
 export function PreviewFormModal(props: Props) {
-  const { open, onClose } = props;
+  const { open = false, onClose } = props;
 
   const handleClose = () => {
     onClose?.(false);
@@ -32,7 +32,6 @@ export function PreviewFormModal(props: Props) {
           </View>
 
           {/* Body */}
-   
         </View>
       </View>
     </Modal>
