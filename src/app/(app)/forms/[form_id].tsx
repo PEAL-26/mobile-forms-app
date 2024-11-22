@@ -17,7 +17,11 @@ import { SeparatorWithLabel } from "@/components/ui/separator";
 export default function FormDetailsScreen() {
   const params = useGlobalSearchParams<{ form_id: string }>();
 
-  const { data: form, isLoading } = useQuery({
+  const {
+    data: form,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryFn: () => formGetByIdService(Number(params.form_id)),
     queryKey: ["form", params.form_id],
   });
@@ -30,6 +34,22 @@ export default function FormDetailsScreen() {
     return (
       <View className="flex-1 justify-center items-center">
         <Text>Formulário não encontrado!</Text>
+        <View className="flex-row gap-2 items-center mt-2">
+          <Button
+            onPress={() => router.back()}
+            className="bg-white p-2 rounded w-24 justify-center items-center"
+            textClassName="text-center"
+          >
+            Voltar
+          </Button>
+          <Button
+            onPress={() => refetch()}
+            className="bg-black p-2 rounded w-24 justify-center items-center"
+            textClassName="text-white text-center"
+          >
+            Recarregar
+          </Button>
+        </View>
       </View>
     );
   }
@@ -58,7 +78,7 @@ export default function FormDetailsScreen() {
           </View>
 
           <SeparatorWithLabel label="Dados (0)" />
-          
+
           {Array.from({ length: 5 }).map(() => (
             <Button className="bg-white p-3 rounded mt-3 flex-row items-center justify-between gap-3">
               <>
