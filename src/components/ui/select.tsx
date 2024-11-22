@@ -20,6 +20,8 @@ interface Props<T extends ItemType> {
   isLoading?: boolean;
   openOutside?: boolean;
   onOpenOutside?(): void;
+  className?: string;
+  containerClassName?: string;
 }
 
 export function Select<T extends ItemType>(props: Props<T>) {
@@ -29,10 +31,16 @@ export function Select<T extends ItemType>(props: Props<T>) {
     isLoading,
     openOutside = false,
     onOpenOutside,
+    placeholder = "Selecione um item",
+    className,
+    containerClassName,
   } = props;
+
   const defaultItem = useMemo(() => props?.defaultItem, [props?.defaultItem]);
   const [currentItem, setCurrentItem] = useState<T | undefined>();
   const [openModal, setOpenModal] = useState(false);
+
+  console.log(defaultItem)
 
   const handleSelect = (data: T | null) => {
     setCurrentItem(data || undefined);
@@ -54,13 +62,16 @@ export function Select<T extends ItemType>(props: Props<T>) {
     ? currentItem?.title
     : defaultItem
     ? defaultItem.title
-    : "Selecione um item";
+    : placeholder;
 
   return (
     <>
       <Button
-        className="h-12 px-3 text-xs w-full rounded-md border border-input bg-background flex-row items-center justify-between"
-        containerClassName="w-full "
+        className={cn(
+          "h-12 px-3 text-xs w-full rounded-md border border-input bg-background flex-row items-center justify-between",
+          className
+        )}
+        containerClassName={cn("w-full", containerClassName)}
         onPress={handleOpen}
       >
         <>

@@ -3,11 +3,45 @@ import { ArrowLeftIcon } from "lucide-react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
 import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { LoadingPage } from "@/components/ui/loading";
 import { RegisterForm } from "@/components/templates/register-form";
+import { getFormByIdWithCountFieldsService } from "@/services/forms";
+import { NotFoundPage, ErrorPage } from "@/components/ui/page-errors";
 
-export default function FormScreen() {
+export default function RegisterFormScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ id: string }>();
+
+  const {
+    data: form,
+    isError,
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryFn: () => {
+      if (params.id !== "undefined") {
+        return getFormByIdWithCountFieldsService(Number(params.id));
+      }
+
+      return null;
+    },
+    queryKey: ["form", params.id],
+  });
+
+  if (isLoading) {
+    return <LoadingPage />;
+  }
+
+  if (isError) {
+    return <ErrorPage />;
+  }
+
+  if (params.id !== "undefined" && !form && !isError && !isLoading) {
+    return (
+      <NotFoundPage refetch={refetch} title="Formulário não encontrado!" />
+    );
+  }
 
   return (
     <View className="relative flex-1">
@@ -16,13 +50,15 @@ export default function FormScreen() {
         <View className="flex-row flex items-center gap-3">
           <Button icon={ArrowLeftIcon} onPress={() => router.back()} />
           <Text className="font-bold text-lg">
-            {params.id ? "Editar formulário" : "Adicionar formulário"}
+            {params.id !== "undefined"
+              ? "Editar formulário"
+              : "Adicionar formulário"}
           </Text>
         </View>
       </View>
 
       {/* Body */}
-      <RegisterForm />
+      <RegisterForm form={form} />
     </View>
   );
 }

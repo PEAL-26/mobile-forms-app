@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { formGetByIdService } from "@/services/forms";
 import { LoadingPage } from "@/components/ui/loading";
 import { SeparatorWithLabel } from "@/components/ui/separator";
+import { NotFoundPage } from "@/components/ui/page-errors";
 
 export default function FormDetailsScreen() {
   const params = useGlobalSearchParams<{ form_id: string }>();
@@ -32,25 +33,7 @@ export default function FormDetailsScreen() {
 
   if (!form) {
     return (
-      <View className="flex-1 justify-center items-center">
-        <Text>Formulário não encontrado!</Text>
-        <View className="flex-row gap-2 items-center mt-2">
-          <Button
-            onPress={() => router.back()}
-            className="bg-white p-2 rounded w-24 justify-center items-center"
-            textClassName="text-center"
-          >
-            Voltar
-          </Button>
-          <Button
-            onPress={() => refetch()}
-            className="bg-black p-2 rounded w-24 justify-center items-center"
-            textClassName="text-white text-center"
-          >
-            Recarregar
-          </Button>
-        </View>
-      </View>
+      <NotFoundPage refetch={refetch} title="Formulário não encontrado!" />
     );
   }
 

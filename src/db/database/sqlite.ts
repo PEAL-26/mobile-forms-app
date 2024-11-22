@@ -18,7 +18,7 @@ export class DatabaseSQLite implements IDatabase {
   constructor(private connection: SQLiteDatabase) {}
 
   async query<T>(sql: string): Promise<T[]> {
-    throw new Error("Method not implemented.");
+    return this.connection.getAllAsync(sql);
   }
 
   async insert<T>(data: Record<string, any>): Promise<T> {

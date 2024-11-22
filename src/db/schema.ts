@@ -21,12 +21,12 @@ export type FieldType = keyof typeof FIELD_TYPE_ENUM;
 
 export const FIELD_TYPE_MAP: Record<FieldType, string> = {
   number: "Número",
-  boolean: "Sim/não",
-  radio: "Escolha Única",
-  checkbox: "Múltiplas Escolhas",
   text: "Texto Simples",
   text_long: "Texto Longo",
-  select: "Selecionar um item",
+  boolean: "Sim/Não",
+  radio: "Escolha Única",
+  checkbox: "Múltiplas Escolhas",
+  select: "Seleção",
 };
 
 export const section = sqliteTable("sections", {

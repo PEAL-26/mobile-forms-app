@@ -1,73 +1,65 @@
 import { View, ScrollView } from "react-native";
-import { EyeIcon, PlusIcon, TrashIcon } from "lucide-react-native";
+import { PlusIcon } from "lucide-react-native";
 
 import { cn } from "@/lib/utils";
-import { FIELD_TYPE_MAP } from "@/db";
 import { Text } from "@/components/ui/text";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { CheckboxGroupItemWithLabel } from "@/components/ui/checkbox";
+import { FlashList } from "@/components/ui/flash-list";
 import { PreviewFormModal } from "@/components/modals/preview-form-modal";
 
 import { RegisterFormProps } from "./types";
 import { useRegisterForm } from "./use-register-form";
+import { FieldComponent } from "./field-component";
+import { SeparatorWithLabel } from "@/components/ui/separator";
+import { DataTypeModal } from "@/components/modals/data-type-modal";
+import { useState } from "react";
+import { FIELD_TYPE_ENUM } from "@/db";
 
 export function RegisterForm(props: RegisterFormProps) {
-  const { fields, handleSubmit, handleAddField, handleRemoveField } =
-    useRegisterForm(props);
+  const {
+    fields,
+    handleSubmit,
+    handleAddField,
+    handleUpdateField,
+    handleRemoveField,
+    handleUpdateDataTypeField,
+  } = useRegisterForm(props);
+
+  const [openDataTypeModal, setOpenDataTypeModal] = useState(false);
+  const [fieldSelect, setFieldSelect] = useState<string | undefined>();
+
+  const handleSelectDataType = (type: FIELD_TYPE_ENUM) => {
+    if (fieldSelect) {
+      handleUpdateDataTypeField(fieldSelect, type);
+    }
+  };
+
+  // console.log(fields);
 
   return (
     <>
       <ScrollView>
-        <View className="flex-1 p-3  w-full">
+        <View className="flex-1 p-3  w-full pb-16">
           <Label>Nome do formulário</Label>
           <Input placeholder="Nome do formulário" />
 
-          <View className="flex flex-row items-center gap-2 my-5">
-            <View className="h-[1px] bg-gray-300 w-full flex-1" />
-            <Text className="text-gray-600">Campos</Text>
-            <View className="h-[1px] bg-gray-300 w-full flex-1" />
-          </View>
+          <SeparatorWithLabel label="Campos" />
 
-          <View className="flex flex-col gap-3 ">
-            {fields.map((field) => (
-              <View key={field.id} className="flex flex-col gap-2 ">
-                <Input placeholder="Título *" />
-                <Textarea placeholder="Descrição (opcional)" />
-                {/* <Input placeholder="Secção (opcional)" />
-                    <Input placeholder="Tipo *" /> */}
-                {/* <Select items={sections} placeholder="Secção (opcional)" /> */}
-                <Select
-                  placeholder="Secção *"
-                  items={Object.entries(FIELD_TYPE_MAP).map(([id, title]) => ({
-                    id,
-                    title,
-                  }))}
-                />
-                <CheckboxGroupItemWithLabel
-                  label="Campo obrigatório"
-                  value="required-field"
-                />
-                <Input placeholder="Data" />
-                <View className="flex flex-row items-center justify-center gap-3">
-                  <Button
-                    icon={EyeIcon}
-                    // iconColor="#ef4444"
-                    // onPress={() => handleRemoveField(field.identifier)}
-                  />
-                  <Button
-                    icon={TrashIcon}
-                    iconColor="#ef4444"
-                    onPress={() => handleRemoveField(field.identifier)}
-                  />
-                </View>
-                <View className="h-[1px] bg-gray-300 w-full flex-1 my-5" />
-              </View>
-            ))}
-          </View>
+          <FlashList
+            data={fields}
+            renderItem={({ item }) => (
+              <FieldComponent
+                field={item}
+                onRemoveField={() => handleRemoveField(item.identifier)}
+                onOpenDataTypeModal={() => {
+                  setFieldSelect(item.identifier);
+                  setOpenDataTypeModal(true);
+                }}
+              />
+            )}
+          />
 
           <Button
             icon={PlusIcon}
@@ -90,6 +82,13 @@ export function RegisterForm(props: RegisterFormProps) {
         </Button>
       </View>
       <PreviewFormModal fields={{}} />
+      {openDataTypeModal && (
+        <DataTypeModal
+          open={openDataTypeModal}
+          onClose={setOpenDataTypeModal}
+          onSelect={handleSelectDataType}
+        />
+      )}
     </>
   );
 }

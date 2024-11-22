@@ -11,7 +11,7 @@ export function useQueryPagination<T>(props: QueryPaginationProps<T>) {
   const { queryKey, fn, ...restProps } = props;
 
   const queryFn = async ({ pageParam: page, ...rest }: QueryFnContext) => {
-    return fn({ page, ...rest });
+    return fn?.({ page, ...rest });
   };
 
   const select = (

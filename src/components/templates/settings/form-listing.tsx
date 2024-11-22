@@ -6,8 +6,8 @@ import {
 import { useState } from "react";
 import { View } from "react-native";
 import { useRouter } from "expo-router";
-import { PlusIcon } from "lucide-react-native";
 import { useDebounce } from "@uidotdev/usehooks";
+import { Edit2Icon, PlusIcon, TrashIcon } from "lucide-react-native";
 
 import { Text } from "@/components/ui/text";
 import { listForms } from "@/services/forms";
@@ -15,10 +15,14 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useQueryPagination } from "@/hooks/use-query-pagination";
 import { FlashList, setFlashListLoader } from "@/components/ui/flash-list";
+import { SettingsFormDetailsModal } from "@/components/modals/settings-form-details-modal";
 
 export function SettingFormListing() {
   const router = useRouter();
   const window = useWindowDimensions();
+
+  const [openDetails, setOpenDetails] = useState(false);
+  const [formId, setFormId] = useState<number | undefined>();
 
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebounce(query, 300);
@@ -48,7 +52,7 @@ export function SettingFormListing() {
         <Button
           icon={PlusIcon}
           className="bg-white rounded-full w-10 h-10 justify-center items-center"
-          onPress={() => router.navigate("/settings/register-form/undefined")}
+          onPress={() => router.push("/settings/register-form/undefined")}
         />
       </View>
 
@@ -59,10 +63,22 @@ export function SettingFormListing() {
           <TouchableOpacity
             className="px-3"
             activeOpacity={0.6}
-            // onPress={() => handleSelect(item)}
+            onPress={() => {
+              setOpenDetails(true);
+              setFormId(item.id);
+            }}
           >
-            <View className="rounded py-1 px-3 bg-white border-b border-gray-300">
+            <View className="rounded py-1 px-3 bg-white border-b border-gray-300 flex-row items-center justify-between gap-3">
               <Text className="line-clamp-2 flex-1">{item.name}</Text>
+              <View className="flex-row items-center gap-3">
+                <Button
+                  icon={() => <Edit2Icon size={20} color="#000" />}
+                  onPress={() =>
+                    router.push(`/settings/register-form/${item.id}`)
+                  }
+                />
+                <Button icon={() => <TrashIcon size={20} color="red" />} />
+              </View>
             </View>
           </TouchableOpacity>
         )}
@@ -99,6 +115,15 @@ export function SettingFormListing() {
         onEndReachedThreshold={0.5}
         showsVerticalScrollIndicator={false}
         onEndReached={loadNextPageData}
+      />
+
+      <SettingsFormDetailsModal
+        formId={formId}
+        open={openDetails}
+        onClose={() => {
+          setOpenDetails(false);
+          setFormId(undefined);
+        }}
       />
     </>
   );
