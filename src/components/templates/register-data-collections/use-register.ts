@@ -5,7 +5,6 @@ import {
   DataUpdate,
 } from "./schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { fieldsSeed, sectionsSeed } from "@/db/data";
 import { useCallback, useEffect, useState } from "react";
 import { RegisterDataCollectionsProps } from "./types";
 import { Alert } from "react-native";
@@ -13,36 +12,8 @@ import { FIELD_TYPE_ENUM } from "@/db";
 import { useQueryPagination } from "@/hooks/use-query-pagination";
 import { listFormsFields, ListFormsFieldsResponseData } from "@/services/forms";
 
-// TODO START remover essa linha posteriormente
-type QueryDataProps = {
-  formId?: string;
-};
-
-function useQueryData(props?: QueryDataProps) {
-  // const { formId } = props || {};
-
-  // Aplicar a pesquisa dos campos pro formulário
-  let response = {
-    data: fieldsSeed.map((item) => ({
-      id: item.id,
-      section: sectionsSeed.find(({ id }) => id === item.sectionId),
-      display: item.display,
-      type: item.type as FIELD_TYPE_ENUM,
-      identifier: item.identifier,
-      data: item.data,
-      dataFields: item?.dataFields,
-      dataWhere: item?.dataWhere,
-      extraField: item?.extraField,
-      description: item?.description,
-    })),
-  };
-
-  return { response };
-}
-// TODO END remover essa linha posteriormente
-
 export function useRegister(props: RegisterDataCollectionsProps) {
-  const { form: collectionsForm, onLoading } = props;
+  const { form: collectionsForm, onLoadingPage: onLoading } = props;
   const [isLoadingPage, setIsLoadingPage] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -63,7 +34,6 @@ export function useRegister(props: RegisterDataCollectionsProps) {
     name: "collections",
   });
 
-  // const { response } = useQueryData();
   const {
     data,
     isEmpty,
@@ -107,25 +77,22 @@ export function useRegister(props: RegisterDataCollectionsProps) {
   const handleSubmit = (data: DataCollectionSchemaType) => {
     const { form, collections } = data;
     if (!form?.id) {
-      return Alert.alert("Dados em falta.", "Selecione um formulário");
+      return Alert.alert("Campos Obrigatórios.", "Selecione um formulário");
     }
 
-    const requireFill = collections.some((collection) => !collection.value);
+    const requireFill = collections.some(
+      (collection) => collection.fields.required && !collection.value
+    );
     if (requireFill) {
       Alert.alert(
-        "Dados em falta.",
-        "Alguns dados não foram preenchidos, continuar mesmo assim?",
-        [
-          {
-            text: "Sim",
-            onPress: () => {
-              handleSubmitOnConfirm(data);
-            },
-          },
-          { text: "Não" },
-        ]
+        "Campos Obrigatórios.",
+        "Alguns campos é de preenchimento Obrigatórios."
       );
+
+      return;
     }
+
+    handleSubmitOnConfirm(data);
   };
 
   const handleUpdate = (identifier: string, data: DataUpdate) => {
@@ -141,17 +108,14 @@ export function useRegister(props: RegisterDataCollectionsProps) {
     });
   };
 
-  const loadingFormToRender = useCallback(
-    async (state: boolean) => {
-      setIsLoadingPage(state);
-      onLoading?.(state);
-    },
-    [onLoading]
-  );
+  const initialLoadingFinished = useCallback(() => {
+    setIsLoadingPage(false);
+    onLoading?.(false);
+  }, [onLoading]);
 
   useEffect(() => {
-    loadingFormToRender(false);
-  }, [loadingFormToRender]);
+    initialLoadingFinished();
+  }, [initialLoadingFinished]);
 
   const startData = (
     props: Omit<ListFormsFieldsResponseData, "formFieldId">
@@ -195,7 +159,7 @@ export function useRegister(props: RegisterDataCollectionsProps) {
   }, [append, data]);
 
   return {
-    collections:data,
+    collections: data,
     form,
     isLoadingPage,
     handleSubmit: form.handleSubmit(handleSubmit),

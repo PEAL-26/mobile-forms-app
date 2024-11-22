@@ -1,9 +1,12 @@
-import { useFieldArray, useForm } from "react-hook-form";
+import uuid from "react-native-uuid";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormSchemaType, formSchema } from "./schema";
-import uuid from 'react-native-uuid';
+import { useFieldArray, useForm } from "react-hook-form";
 
-export function useAddForm() {
+import { FormSchemaType, formSchema } from "./schema";
+
+import { RegisterFormProps } from "./types";
+
+export function useRegisterForm(props: RegisterFormProps) {
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
     mode: "onChange",

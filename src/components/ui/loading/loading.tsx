@@ -1,5 +1,5 @@
-import { Modal, View } from "react-native";
-import { ActivityIndicator } from "react-native";
+import { Modal } from "react-native";
+import { LoadingPage } from "./loading-page";
 
 interface Props {
   show?: boolean;
@@ -24,18 +24,11 @@ export function Loading(props: Props) {
       statusBarTranslucent
       animationType="fade"
     >
-      <View
-        style={[
-          {
-            backgroundColor,
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-          },
-        ]}
-      >
-        <ActivityIndicator color={color} size={size} />
-      </View>
+      <LoadingPage
+        backgroundColor={backgroundColor}
+        color={color}
+        size={size}
+      />
     </Modal>
   );
 }

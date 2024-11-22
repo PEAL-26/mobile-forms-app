@@ -40,15 +40,15 @@ const Checkbox = forwardRef<
 Checkbox.displayName = CheckboxPrimitive.Root.displayName;
 
 function CheckboxGroupItemWithLabel({
-  checked,
+  checked = false,
   value,
   label,
   onChecked,
 }: Readonly<{
-  value: string;
-  checked: boolean;
   label: string;
-  onChecked: (checked: boolean) => void;
+  value?: string;
+  checked?: boolean;
+  onChecked?: (checked: boolean) => void;
 }>) {
   const [currentChecked, setChecked] = useState(checked);
 
@@ -60,12 +60,12 @@ function CheckboxGroupItemWithLabel({
   return (
     <View className={"flex-row gap-2 items-center"}>
       <Checkbox
-        aria-labelledby={"label-for-" + value}
+        aria-labelledby={"label-for-" + value || label}
         checked={currentChecked}
         onCheckedChange={handleChecked}
       />
       <Label
-        nativeID={"label-for-" + value}
+        nativeID={"label-for-" + value || label}
         onPress={() => handleChecked(!currentChecked)}
       >
         {label}

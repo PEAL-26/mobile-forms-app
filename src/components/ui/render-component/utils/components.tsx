@@ -11,6 +11,7 @@ export interface ComponentProps {
   onChangeExtras?(data: any): void;
   identifier?: string;
   isLoading?: boolean;
+  onOpenOutside?(): void;
 }
 
 export function Component(props: ComponentProps) {

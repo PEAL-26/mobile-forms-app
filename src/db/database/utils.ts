@@ -1,4 +1,3 @@
-import { exists } from "drizzle-orm";
 import {
   DatabaseConfigSelect,
   DatabaseInclude,
@@ -90,31 +89,26 @@ export function generateIncludes(
 
 export function serialize(data: any, tableNames: string[]) {
   const mainTable = tableNames[0];
-  let newData = [];
-  for (const item of data) {
-    let obj: Record<string, any> = {};
+  let obj: Record<string, any> = {};
 
-    for (const [field, value] of Object.entries(item)) {
-      if (field.startsWith(mainTable)) {
-        const fieldReplaced = field.replaceAll(`${mainTable}_`, "");
-        obj[fieldReplaced] = value;
-      } else {
-        for (const table of tableNames.slice(1)) {
-          if (field.startsWith(table)) {
-            const fieldReplaced = field.replaceAll(`${table}_`, "");
-            if (field === `${table}_${fieldReplaced}`) {
-              setNestedValue(obj, `${table}.${fieldReplaced}`, value);
-              break;
-            }
+  for (const [field, value] of Object.entries(data)) {
+    if (field.startsWith(mainTable)) {
+      const fieldReplaced = field.replaceAll(`${mainTable}_`, "");
+      obj[fieldReplaced] = value;
+    } else {
+      for (const table of tableNames.slice(1)) {
+        if (field.startsWith(table)) {
+          const fieldReplaced = field.replaceAll(`${table}_`, "");
+          if (field === `${table}_${fieldReplaced}`) {
+            setNestedValue(obj, `${table}.${fieldReplaced}`, value);
+            break;
           }
         }
       }
     }
-
-    newData.push(obj);
   }
 
-  return newData;
+  return obj;
 }
 
 export function fieldsMap(fields: string[], tables: string[]) {

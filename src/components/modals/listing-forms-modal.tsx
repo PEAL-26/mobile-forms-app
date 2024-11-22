@@ -6,7 +6,7 @@ import { Input } from "../ui/input";
 type Form = {
   id: number;
   name: string;
-  descriptions?: string;
+  descriptions: string | null;
 };
 
 interface Props {

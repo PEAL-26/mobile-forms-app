@@ -16,6 +16,7 @@ const fieldSchema = z.object({
       description: z.string().nullable(),
     })
     .nullable(),
+  required: z.boolean().default(false),
   display: z.string(),
   type: z.nativeEnum(FIELD_TYPE_ENUM),
   identifier: z.string(),

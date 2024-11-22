@@ -74,8 +74,15 @@ export default function RootLayout() {
         <SafeAreaView style={{ flex: 1 }}>
           <AutocompleteDropdownContextProvider>
             <QueryClientProvider client={queryClient}>
-              <Stack initialRouteName="(app)/index">
-                <Stack.Screen
+              <Stack
+                initialRouteName="(app)/index"
+                screenOptions={{
+                  headerShown: false,
+                  animation: 'flip',
+                  animationDuration: 300
+                }}
+              >
+                {/* <Stack.Screen
                   name="(app)/index"
                   options={{ headerShown: false }}
                 />
@@ -86,7 +93,8 @@ export default function RootLayout() {
                 <Stack.Screen
                   name="(app)/configuracoes"
                   options={{ headerShown: false }}
-                />
+                /> */}
+
               </Stack>
             </QueryClientProvider>
             <StatusBar style="dark" translucent animated />

@@ -12,7 +12,7 @@ import {
   SettingDataTablesListing,
 } from "@/components/templates/settings";
 
-export default function ConfiguracoesScreen() {
+export default function SettingsScreen() {
   const router = useRouter();
   const [currentTab, setCurrentTab] = useState<string>("forms");
 

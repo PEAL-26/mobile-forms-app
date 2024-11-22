@@ -16,14 +16,15 @@ type ItemType = {
 };
 
 interface SelectDataModalProps {
-  data: ItemType[];
+  data?: ItemType[];
   onSelect?(data: ItemType | null): void;
   open?: boolean;
   onClose?(state: false): void;
+  info?: any;
 }
 
 export const SelectDataModal = memo((props: SelectDataModalProps) => {
-  const { open, onClose, data, onSelect } = props;
+  const { open, onClose, data = [], onSelect } = props;
   const [isLoading, setIsLoading] = useState(true);
 
   const handleClose = () => {

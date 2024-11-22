@@ -38,6 +38,7 @@ export const section = sqliteTable("sections", {
 export const formField = sqliteTable("forms_fields", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
   formId: integer("form_id", { mode: "number" }).references(() => form.id),
+  required: integer("required", { mode: "boolean" }).default(false),
   sectionId: integer("section_id", { mode: "number" })
     .references(() => section.id)
     .notNull(),
@@ -54,7 +55,7 @@ export const formField = sqliteTable("forms_fields", {
   dataWhere: text("data_where"),
   // {field:string, value:string, from_another_selection: string}
   // from_another_selection -> informar o identificador do campo
-  // se for a partir de outra infromação selecionada a partir de outro select, o {field} deve ser o campo a ser levado em conta da outro select, e o from_another_selection deve ser informado o valor do identificador do outro select
+  // se for a partir de outra infromação selecionada a partir de outro select, o {field} deve ser o campo a ser levado em conta do outro select, e o from_another_selection deve ser informado o valor do identificador do outro select
   extraField: text("extra_field"),
   // {indentifier:string, type:string, display: string}
   // field: nome do campo, type: tipo de dado
@@ -85,6 +86,7 @@ export const formation = sqliteTable("formations", {
 
 export const dataCollection = sqliteTable("data_collection", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+  identifier: text("identifier").notNull(),
   formFieldId: integer("formField_id", { mode: "number" })
     .references(() => formField.id)
     .notNull(),

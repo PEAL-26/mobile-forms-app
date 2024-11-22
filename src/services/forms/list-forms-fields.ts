@@ -15,6 +15,7 @@ export type ListFormsFieldsResponseData = {
     description: string | null;
   } | null;
   display: string;
+  required: boolean;
   type: FIELD_TYPE_ENUM;
   identifier: string;
   data: string | null;
@@ -32,6 +33,7 @@ export async function listFormsFields(params?: ListFormsFieldsParams) {
       display: true,
       type: true,
       identifier: true,
+      required: true,
       data: true,
       data_fields: {
         as: "dataFields",

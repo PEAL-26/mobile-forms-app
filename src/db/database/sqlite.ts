@@ -34,6 +34,28 @@ export class DatabaseSQLite implements IDatabase {
     throw new Error("Method not implemented.");
   }
 
+  async getFirst<T>(
+    tableName: string,
+    configs?: DatabaseConfig
+  ): Promise<T | null> {
+    const { select, where, include } = configs || {};
+    const fields = generateQueryFields(select);
+    const includes = generateIncludes(tableName, include);
+    const whereClause = generateWhereClause(where);
+    const includesFields =
+      includes.fields.length > 0
+        ? `, ${fieldsMap(includes.fields, includes.tables)}`
+        : "";
+    const query = `SELECT ${fieldsMap(fields, [
+      tableName,
+    ])}${includesFields} FROM ${tableName} ${includes.joins} ${whereClause}`;
+
+    const result = await this.connection.getAllAsync<T>(query);
+    if (result.length === 0) return null;
+
+    return serialize(result[0], [tableName, ...includes.tables]) as T;
+  }
+
   select<T>(fields: Field<T>, tableName: string): Promise<T[]> {
     throw new Error("Method not implemented.");
   }
@@ -73,7 +95,9 @@ export class DatabaseSQLite implements IDatabase {
     // Consulta para obter os dados paginados
     const paginatedQuery = `${baseQuery} LIMIT ${size} OFFSET ${offset}`;
     const result = await this.connection.getAllAsync<T>(paginatedQuery);
-    const data = serialize(result, [tableName, ...includes.tables]) as T[];
+    const data = result.map(
+      (item) => serialize(item, [tableName, ...includes.tables]) as T
+    );
 
     // Calcular informações de paginação
     const totalPages = Math.ceil(totalItems / size);

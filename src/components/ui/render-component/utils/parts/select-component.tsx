@@ -5,16 +5,19 @@ interface Props {
   defaultData: any;
   onChange?: (data: any) => void;
   isLoading?: boolean;
+  onOpenOutside?(): void;
 }
 
 export function getSelectComponent(props: Props) {
-  const { data, defaultData, onChange, isLoading } = props;
+  const { data, defaultData, onChange, isLoading, onOpenOutside } = props;
   return (
     <Select
       items={data}
       defaultItem={defaultData}
       onSelect={onChange}
       isLoading={isLoading}
+      openOutside
+      onOpenOutside={onOpenOutside}
     />
   );
 }

@@ -23,4 +23,8 @@ export abstract class IDatabase {
   abstract update<T>(data: Record<string, any>, id: string): Promise<T>;
   abstract delete<T>(id: string): Promise<T>;
   abstract select<T>(fields: Field<T>, tableName: string): Promise<T[]>;
+  abstract getFirst<T>(
+    tableName: string,
+    configs?: DatabaseConfig
+  ): Promise<T | null>;
 }

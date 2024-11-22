@@ -20,12 +20,16 @@ export function setFlashListLoader(
   isLoading?: boolean,
   isError?: boolean,
   refetch?: () => void,
-  config?: { className: string }
+  config?: { className?: string; height?: number }
 ) {
-  const { className } = config || {};
+  const { className, height } = config || {};
   return (
     <View
-      className={cn("px-4 pb-4 w-full justify-center items-center", className)}
+      style={{ height }}
+      className={cn(
+        "p-4 w-full justify-center items-center",
+        className
+      )}
     >
       <FlashListLoader
         isLoading={isLoading}

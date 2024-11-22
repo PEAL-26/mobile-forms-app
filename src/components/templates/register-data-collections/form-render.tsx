@@ -27,12 +27,13 @@ interface FormRenderProps {
   fields: Fields;
   value?: any;
   onUpdate?(identifier: string, data: any): void;
+  onOpenOutside?(): void;
 }
 
 var lastSection = "";
 var showSection = false;
 const FormRender = memo((props: FormRenderProps) => {
-  const { fields, onUpdate } = props;
+  const { fields, onUpdate, onOpenOutside } = props;
   if (fields?.section === null) {
     showSection = false;
   } else {
@@ -44,13 +45,15 @@ const FormRender = memo((props: FormRenderProps) => {
     }
   }
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedOnUpdate = useCallback(
-    debounce((identifier: string, data: any) => {
-      onUpdate?.(identifier, data);
-    }, 300),
-    []
+    (identifier: string, data: any) =>
+      debounce(() => {
+        onUpdate?.(identifier, data);
+      }, 500),
+    [onUpdate]
   );
+
+  // TODO Fazer todo o processamento de dados aqui nessa parte
 
   return (
     <View className="px-3 mt-4">
@@ -70,6 +73,7 @@ const FormRender = memo((props: FormRenderProps) => {
         onChangeExtras={(extras) =>
           debouncedOnUpdate(fields.identifier, { value: extras })
         }
+        onOpenOutside={onOpenOutside}
       />
     </View>
   );

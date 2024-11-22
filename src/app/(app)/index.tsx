@@ -5,7 +5,7 @@ import { PlusIcon, DownloadIcon, CogIcon } from "lucide-react-native";
 
 import { Button } from "@/components/ui/button";
 import { ExportDataModal } from "@/components/modals/export-data-modal";
-import { ListingDataCollections } from "@/components/templates/listing-data-collections";
+import { ListingFormsWithCountCollections } from "@/components/templates/listing-forms-with-count-collections";
 
 export default function HomeScreen() {
   const [openExportDataModal, setOpenExportData] = useState(false);
@@ -21,21 +21,21 @@ export default function HomeScreen() {
               source={require("../../../assets/images/logo.png")}
               style={{ width: 40, height: 40 }}
             />
-            <Text className="font-bold text-lg">DAP Essentials Needs</Text>
+            <Text className="font-bold text-lg">Mobile Forms</Text>
           </View>
           <Button
             icon={CogIcon}
-            onPress={() => router.push("/(app)/configuracoes")}
+            onPress={() => router.push("/(app)/settings")}
           />
         </View>
 
-        <ListingDataCollections />
+        <ListingFormsWithCountCollections />
 
         {/* Buttons */}
         <View className="absolute right-3 bottom-3 flex flex-col gap-3">
           <Button
             className="w-12 h-12 bg-black rounded-full justify-center items-center"
-            onPress={() => router.push("/(app)/register")}
+            onPress={() => router.navigate("/collect-data/undefined")}
             icon={PlusIcon}
             iconColor="#fff"
           />

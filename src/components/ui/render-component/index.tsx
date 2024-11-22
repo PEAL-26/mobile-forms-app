@@ -22,11 +22,18 @@ interface Props {
   defaultDataExtras?: any;
   onChange?(id: any): void;
   onChangeExtras?(id: any): void;
+  onOpenOutside?(): void;
 }
 
 export function RenderComponent(props: Props) {
-  const { fields, defaultData, defaultDataExtras, onChange, onChangeExtras } =
-    props;
+  const {
+    fields,
+    defaultData,
+    defaultDataExtras,
+    onChange,
+    onChangeExtras,
+    onOpenOutside,
+  } = props;
 
   const [data, setData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -94,6 +101,7 @@ export function RenderComponent(props: Props) {
         onChange={onChange}
         defaultDataExtras={defaultDataExtras}
         onChangeExtras={onChangeExtras}
+        onOpenOutside={onOpenOutside}
         isLoading={isLoading}
       />
     </View>

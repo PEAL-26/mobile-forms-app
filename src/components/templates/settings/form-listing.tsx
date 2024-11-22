@@ -1,21 +1,19 @@
-import { AddFormModal } from "@/components/modals/add-form-modal";
-import { Button } from "@/components/ui/button";
-import { DataTable, Column } from "@/components/ui/data-table";
-import { Input } from "@/components/ui/input";
-import { TabsContent } from "@/components/ui/tabs";
+import { useRouter } from "expo-router";
 import { PlusIcon } from "lucide-react-native";
-import { useState } from "react";
-import { View } from "react-native";
+
+import { Button } from "@/components/ui/button";
+import { TabsContent } from "@/components/ui/tabs";
 
 export function SettingFormListing() {
-  const [openAddForm, setOpenAddForm] = useState(false);
+  const router = useRouter();
+
   return (
     <>
       <TabsContent value="forms">
         <Button
           icon={PlusIcon}
           className="bg-white rounded-full w-10 h-10 justify-center items-center"
-          onPress={() => setOpenAddForm(true)}
+          onPress={() => router.navigate("/settings/register-form/undefined")}
         />
         {/* <DataTable
         // columns={[
@@ -33,8 +31,6 @@ export function SettingFormListing() {
         // }}
       /> */}
       </TabsContent>
-
-      <AddFormModal open={openAddForm} onClose={setOpenAddForm} />
     </>
   );
 }

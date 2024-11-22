@@ -1,4 +1,4 @@
-import { memo, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { ChevronsUpDown } from "lucide-react-native";
 import { cn } from "@/lib/utils";
 
@@ -43,7 +43,8 @@ export function Select<T extends ItemType>(props: Props<T>) {
     if (isLoading) return;
 
     if (openOutside) {
-      return onOpenOutside?.();
+      onOpenOutside?.();
+      return;
     }
 
     setOpenModal(true);
@@ -80,7 +81,7 @@ export function Select<T extends ItemType>(props: Props<T>) {
         </>
       </Button>
 
-      {openOutside && (
+      {!openOutside && (
         <SelectDataModal
           data={items}
           onSelect={handleSelect}

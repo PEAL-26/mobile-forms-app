@@ -4,18 +4,23 @@ import { ActivityIndicator, useWindowDimensions, View } from "react-native";
 import { cn } from "@/lib/utils";
 import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
-import { FlashList } from "@/components/ui/flash-list";
+import { FlashList, setFlashListLoader } from "@/components/ui/flash-list";
 import { AddModal } from "@/components/modals/add-modal";
 
 import { FormRender } from "./form-render";
 import { useRegister } from "./use-register";
 import { RegisterDataCollectionsProps } from "./types";
 import { Loading } from "@/components/ui/loading";
-import { setFlashListLoader } from "./flash-list-loader";
+import { SelectDataModal } from "@/components/modals/select-data-modal";
+import { DataCollectionFieldSchemaType } from "./schema";
 
 export function RegisterDataCollections(props: RegisterDataCollectionsProps) {
+  const { isLoadingForm } = props;
+
   const window = useWindowDimensions();
   const [openAddModal, setOpenAddModal] = useState(false);
+  const [openSelectModal, setOpenSelectModal] = useState(false);
+  const [selectInfoModal, setSelectInfoModal] = useState("");
 
   const {
     collections,
@@ -32,7 +37,7 @@ export function RegisterDataCollections(props: RegisterDataCollectionsProps) {
     loadNextPageData,
   } = useRegister(props);
 
-  if (isLoadingPage) {
+  if (isLoadingPage || isLoadingForm) {
     return (
       <View className="flex-1 justify-center items-center">
         <ActivityIndicator color="#000" size="small" />
@@ -40,15 +45,27 @@ export function RegisterDataCollections(props: RegisterDataCollectionsProps) {
     );
   }
 
+  const handleOpenSelectModal = (item: DataCollectionFieldSchemaType) => {
+    console.log(item);
+    setOpenSelectModal(true);
+    setSelectInfoModal("");
+  };
+
   return (
     <>
       <FlashList
         data={collections}
         refreshing={isLoadingAll}
         renderItem={({ item }) => (
-          <FormRender fields={item} onUpdate={handleUpdate} />
+          <FormRender
+            fields={item}
+            onUpdate={handleUpdate}
+            onOpenOutside={() => {
+              handleOpenSelectModal(item);
+            }}
+          />
         )}
-        keyExtractor={(item) => item.identifier}
+        keyExtractor={(item: any) => item.identifier}
         ListFooterComponent={setFlashListLoader(isFetching, isError, refetch, {
           height: collections.length === 0 ? window.height - 80 : undefined,
         })}
@@ -97,6 +114,11 @@ export function RegisterDataCollections(props: RegisterDataCollectionsProps) {
       <Loading show={isSaving} />
 
       <AddModal open={openAddModal} onClose={setOpenAddModal} />
+      <SelectDataModal
+        info={selectInfoModal}
+        open={openSelectModal}
+        onClose={setOpenSelectModal}
+      />
     </>
   );
 }
