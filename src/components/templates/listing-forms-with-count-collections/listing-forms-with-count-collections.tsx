@@ -4,7 +4,7 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-import { useCallback, useState } from "react";
+import {  useState } from "react";
 import { useDebounce } from "@uidotdev/usehooks";
 
 import { Text } from "@/components/ui/text";

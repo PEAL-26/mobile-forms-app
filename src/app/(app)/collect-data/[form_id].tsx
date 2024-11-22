@@ -20,6 +20,8 @@ export default function CollectDataScreen() {
   const [openFormModal, setOpenFormModal] = useState(false);
   const [isLoadingPage, setIsLoadingPage] = useState(false);
 
+  console.log(params.form_id);
+
   const { data: form = null, isLoading } = useQuery({
     queryFn: () => {
       return formId ? formGetByIdService(formId) : null;
@@ -53,11 +55,25 @@ export default function CollectDataScreen() {
           </View>
           <Button onPress={() => router.back()}>Cancelar</Button>
         </View>
-        <RegisterDataCollections
-          form={form || undefined}
-          isLoadingForm={isLoading}
-          onLoadingPage={setIsLoadingPage}
-        />
+
+        {!form && (
+          <View className="flex-1 flex-row justify-center items-center">
+            <Button
+              textClassName="font-bold text-lg"
+              onPress={() => setOpenFormModal(true)}
+            >
+              Selecione um formulário
+            </Button>
+          </View>
+        )}
+
+        {form && (
+          <RegisterDataCollections
+            form={form || undefined}
+            isLoadingForm={isLoading}
+            onLoadingPage={setIsLoadingPage}
+          />
+        )}
       </View>
       <ListingFormsModal
         open={openFormModal}
