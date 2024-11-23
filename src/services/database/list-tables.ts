@@ -1,19 +1,19 @@
 import { db } from "@/db";
 
-export type ListFormsParams = {
+export type ListTablesParams = {
   query?: string;
   size?: number;
   page?: number;
 };
 
-export type ListFormsResponseData = {
+export type ListTablesResponseData = {
   id: number;
   name: string;
 };
 
-export async function listForms(params?: ListFormsParams) {
+export async function listTableService(params?: ListTablesParams) {
   const { page, size, query } = params || {};
-  return db.listPaginate<ListFormsResponseData>("forms", {
+  return db.listPaginate<ListTablesResponseData>("data_tables", {
     select: {
       id: true,
       name: true,
@@ -23,6 +23,5 @@ export async function listForms(params?: ListFormsParams) {
     where: {
       name: query,
     },
-    orderBy: [{ created_at: "desc" }],
   });
 }

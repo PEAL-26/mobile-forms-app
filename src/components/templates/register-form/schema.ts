@@ -8,14 +8,14 @@ const sectionSchema = z.object({
 
 const fieldSchema = z.object({
   identifier: z.string(),
-  require: z.boolean().default(false).optional(),
+  required: z.boolean().default(false),
   section: sectionSchema.optional(),
   type: z.nativeEnum(FIELD_TYPE_ENUM).default(FIELD_TYPE_ENUM.text),
   display: z.string(),
   description: z.string().optional(),
   data: z
     .object({
-      type: z.nativeEnum(DATA_TYPE_ENUM).default(DATA_TYPE_ENUM.array),
+      type: z.nativeEnum(DATA_TYPE_ENUM).default(DATA_TYPE_ENUM.data_table),
       src: z.string(),
     })
     .optional(),
@@ -36,7 +36,8 @@ const fieldSchema = z.object({
 });
 
 export const formSchema = z.object({
-  name: z.string(),
+  name: z.string({ message: "Campo Obrigatório." }),
+  description: z.string().nullable().optional(),
   fields: z.array(fieldSchema),
 });
 

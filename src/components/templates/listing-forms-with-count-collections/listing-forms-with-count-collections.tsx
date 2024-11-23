@@ -4,7 +4,7 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-import {  useState } from "react";
+import { useState } from "react";
 import { useDebounce } from "@uidotdev/usehooks";
 
 import { Text } from "@/components/ui/text";
@@ -51,11 +51,11 @@ export function ListingFormsWithCountCollections() {
         refreshing={isLoading}
         renderItem={({ item }) => (
           <TouchableOpacity
-            className="px-3"
+            className="px-3 mb-3"
             activeOpacity={0.6}
             onPress={() => router.push(`/(app)/forms/${String(item.id)}`)}
           >
-            <View className="flex-row items-center justify-between gap-5 bg-white shadow rounded-md py-2 px-3 h-20">
+            <View className="flex-row items-center justify-between gap-10 bg-white shadow rounded-md py-2 px-3 h-20">
               <View className="flex-1">
                 <Text className="font-bold text-base line-clamp-1 flex-1">
                   {item.name}

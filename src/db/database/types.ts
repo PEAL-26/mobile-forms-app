@@ -48,3 +48,16 @@ export interface PaginatedResult<T> {
 export type UpdateBulkData = Record<string, any> & {
   id: string;
 };
+
+export enum DATABASE_COLUMNS_TYPE_ENUM {
+  "INTEGER" = "INTEGER",
+  "TEXT" = "TEXT",
+  "BLOB" = "BLOB",
+  "REAL" = "REAL",
+  "NUMERIC" = "NUMERIC",
+}
+
+export type DatabaseCreateTableColumns = Record<
+  string,
+  DATABASE_COLUMNS_TYPE_ENUM
+>;

@@ -21,8 +21,8 @@ export enum FIELD_TYPE_ENUM {
 }
 
 export enum DATA_TYPE_ENUM {
-  "array" = "array",
-  "table" = "table",
+  "list" = "list",
+  "data_table" = "data_table",
 }
 
 export type FieldType = keyof typeof FIELD_TYPE_ENUM;
@@ -105,6 +105,13 @@ export const dataCollection = sqliteTable("data_collection", {
   field: text("field").notNull(),
   type: t.text().$type<FieldType>().default("text"),
   value: text("value").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).default(sql`current_timestamp`),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).default(sql`current_timestamp`),
+});
+
+export const dataTable = sqliteTable("data_tables", {
+  id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+  name: text("name").notNull(),
   createdAt: integer("created_at", { mode: "timestamp" }).default(sql`current_timestamp`),
   updatedAt: integer("updated_at", { mode: "timestamp" }).default(sql`current_timestamp`),
 });

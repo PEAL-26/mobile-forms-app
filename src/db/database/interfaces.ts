@@ -21,10 +21,10 @@ export abstract class IDatabase {
     configs?: ListPaginateConfigs
   ): AsyncIterableIterator<T>;
   abstract insert<T>(tableName: string, data: Record<string, any>): Promise<T>;
-  abstract insertBulk<T>(
+  abstract insertBulk(
     tableName: string,
     data: Record<string, any>[]
-  ): Promise<T[]>;
+  ): Promise<void>;
   abstract update<T>(
     tableName: string,
     data: Record<string, any>,

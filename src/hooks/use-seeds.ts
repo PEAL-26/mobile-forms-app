@@ -65,7 +65,9 @@ export function useSeeds(props: Props) {
               connection.run(
                 `INSERT INTO  sections (id, name, description) VALUES (${
                   section.id
-                }, "${section.name}", ${stringNullable(section.description)});`
+                }, "${section.name}", ${
+                  section.description ? `"${section.description}"` : null
+                });`
               )
             )
           );
@@ -77,7 +79,9 @@ export function useSeeds(props: Props) {
               connection.run(
                 `INSERT INTO  forms (id, name, description) VALUES (${
                   form.id
-                }, "${form.name}", ${stringNullable(form.description)});`
+                }, "${form.name}", ${
+                  form.description ? `"${form.description}"` : null
+                });`
               )
             )
           );
@@ -85,21 +89,19 @@ export function useSeeds(props: Props) {
 
         if (formsField.count === 0) {
           await Promise.all(
-            fieldsSeed.map((field) =>
-              connection.run(
+            fieldsSeed.map((field) => {
+              return connection.run(
                 `INSERT INTO  forms_fields (id, form_id, section_id, display, type, identifier, data, data_where, extra_field, description) VALUES (${
                   field.id
                 }, ${field.formId}, ${field.sectionId}, "${field.display}", "${
                   field.type
-                }", "${field.identifier}", ${stringNullable(
-                  field.data
-                )}, ${stringNullable(
-                  field.dataWhere
-                )}, ${stringNullable(field.extraField)}, ${stringNullable(
-                  field.description
-                )});`
-              )
-            )
+                }", "${field.identifier}", ${
+                  field.data ? `'${field.data}'` : null
+                }, ${field.dataWhere ? `'${field.dataWhere}'` : null}, ${
+                  field.extraField ? `'${field.extraField}'` : null
+                }, ${field.description ? `"${field.description}"` : null});`
+              );
+            })
           );
         }
 
@@ -121,5 +123,5 @@ export function useSeeds(props: Props) {
 }
 
 function stringNullable(value: string | undefined | null) {
-  return value ? `"${value.replaceAll('"', "'")}"` : null;
+  return value ? `"${value}"` : null;
 }

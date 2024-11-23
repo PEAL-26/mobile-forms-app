@@ -1,21 +1,36 @@
 import { cn } from "@/lib/utils";
-import { ElementType, isValidElement } from "react";
+import {
+  ComponentPropsWithoutRef,
+  ElementRef,
+  ElementType,
+  forwardRef,
+  isValidElement,
+  ReactNode,
+} from "react";
 import {
   TouchableOpacityProps,
   Text,
   TouchableOpacity,
   View,
+  ViewProps,
+  ViewStyle,
 } from "react-native";
 
-interface CustomProps extends TouchableOpacityProps {
+interface CustomProps extends TouchableOpacityProps{
   textClassName?: string;
   containerClassName?: string;
   iconClassName?: string;
   icon?: ElementType;
   iconColor?: string;
+  children?: ReactNode;
+  className?: string;
+  style?: ViewStyle;
 }
 
-export function Button(props: CustomProps) {
+export const Button = forwardRef<
+  ElementRef<typeof TouchableOpacity>,
+  CustomProps
+>((props, ref) => {
   const {
     children,
     className,
@@ -33,6 +48,7 @@ export function Button(props: CustomProps) {
   return (
     <TouchableOpacity
       {...rest}
+      ref={ref}
       activeOpacity={0.6}
       className={cn("w-fit", containerClassName)}
     >
@@ -52,4 +68,6 @@ export function Button(props: CustomProps) {
       </View>
     </TouchableOpacity>
   );
-}
+});
+
+Button.displayName = "Button";

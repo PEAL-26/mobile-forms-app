@@ -61,7 +61,7 @@ export function SectionModal(props: Props) {
     loadNextPageData,
   } = useQueryPagination({
     fn: ({ page }) => listSectionService({ page, query: debouncedQuery }),
-    queryKey: ["forms", debouncedQuery],
+    queryKey: ["sections", debouncedQuery],
   });
 
   const [name, setName] = useState("");

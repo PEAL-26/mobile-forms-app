@@ -1,5 +1,7 @@
 import {
+  DATABASE_COLUMNS_TYPE_ENUM,
   DatabaseConfigSelect,
+  DatabaseCreateTableColumns,
   DatabaseInclude,
   DatabaseWhere,
   DatabaseWhereField,
@@ -185,16 +187,69 @@ const NOT_STRING_TYPES = ["boolean", "number"];
 
 export function generateCreateFields(data: Record<string, any>) {
   let fields: string[] = [];
-  let values: string[] = [];
+  let values: any[] = [];
   for (const [field, value] of Object.entries(data)) {
+    if (value === undefined) {
+      continue;
+    }
+
     fields.push(field);
 
-    if (NOT_STRING_TYPES.includes(typeof value)) {
-      values.push(value);
-    } else {
-      values.push(`"${value}"`);
+    if (value === null) {
+      values.push(null);
+      continue;
     }
+
+    if (typeof value === "object") {
+      values.push(`'${value}'`);
+      continue;
+    }
+
+    if (typeof value !== "object" && NOT_STRING_TYPES.includes(typeof value)) {
+      values.push(value);
+      continue;
+    }
+
+    values.push(`"${value}"`);
   }
-  
+
   return { fields, values };
+}
+
+export function join(array: any[], separator?: string) {
+  let data: string = "";
+
+  let index = 1;
+  for (const value of array) {
+    let _separator = array.length > index ? separator || "" : "";
+    data += `${value}${_separator}`;
+    index++;
+  }
+
+  return data.trim();
+}
+
+export function generateCreateTableScript(
+  tableName: string,
+  columns: DatabaseCreateTableColumns
+): string {
+  // Validação básica
+  if (!tableName || !columns || Object.keys(columns).length === 0) {
+    throw new Error("O nome da tabela e as colunas são obrigatórios.");
+  }
+
+  // Gerar as definições de colunas
+  const columnsDefinition = Object.entries(columns)
+    .map(([columnName, dataType]) => {
+      if (!DATABASE_COLUMNS_TYPE_ENUM[dataType]) {
+        throw new Error(`Tipo de dado inválido: ${dataType}`);
+      }
+      return `${columnName} ${DATABASE_COLUMNS_TYPE_ENUM[dataType]}`;
+    })
+    .join(", ");
+
+  // Construir o script de criação da tabela
+  const createTableScript = `CREATE TABLE IF NOT EXISTS ${tableName} (${columnsDefinition});`;
+
+  return createTableScript;
 }

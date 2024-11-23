@@ -71,7 +71,7 @@ export function DataTypeModal(props: Props) {
                       <View>
                         {key === FIELD_TYPE_ENUM.number && (
                           <>
-                            <View className="border border-gray-300 rounded flex-row items-center justify-between h-6 px-1 gap-2">
+                            <View className="border border-gray-300 rounded flex-row items-center justify-between h-5 px-1 gap-2">
                               <Text className="text-gray-500 text-xs">
                                 1234
                               </Text>
@@ -80,7 +80,7 @@ export function DataTypeModal(props: Props) {
                         )}
                         {key === FIELD_TYPE_ENUM.text && (
                           <>
-                            <View className="border border-gray-300 rounded h-6 px-1 gap-2">
+                            <View className="border border-gray-300 rounded h-5 px-1 gap-2">
                               <Text
                                 style={{ fontSize: 8 }}
                                 className="text-gray-500 text-xs"

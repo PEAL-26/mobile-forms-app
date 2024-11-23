@@ -14,6 +14,7 @@ import {
   generateOrderByClause,
   generateQueryFields,
   generateWhereClause,
+  join,
   serialize,
 } from "./utils";
 
@@ -28,17 +29,31 @@ export class DatabaseSQLite implements IDatabase {
     const { fields, values } = generateCreateFields(data);
 
     const result = await this.connection.runAsync(
-      `INSERT INTO ${tableName} (${fields.join(", ")}) VALUES (${values.join(
+      `INSERT INTO ${tableName} (${fields.join(", ")}) VALUES (${join(
+        values,
         ", "
       )});`
     );
+
     data.id = result.lastInsertRowId;
 
     return data as T;
   }
 
-  insertBulk<T>(tableName: string, data: Record<string, any>[]): Promise<T[]> {
-    throw new Error("Method not implemented.");
+  async insertBulk(
+    tableName: string,
+    data: Record<string, any>[]
+  ): Promise<void> {
+    console.log(data)
+    await Promise.all(
+      data.map((item) => {
+        const { fields, values } = generateCreateFields(item);
+        let sql = `INSERT INTO ${tableName} (${fields.join(
+          ", "
+        )}) VALUES (${join(values, ", ")});`;
+        return this.connection.runAsync(sql);
+      })
+    );
   }
 
   update<T>(

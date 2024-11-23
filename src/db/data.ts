@@ -58,8 +58,7 @@ export const fieldsSeed = [
     identifier: "1",
     display: "Selecione a província",
     type: "select",
-    data: "table: provinces",
-    dataFields: '{"identifier":"id", "title":"name"}',
+    data: '{"type":"data_table","src":"provinces (id as id, name as title)"}',
   },
   {
     id: 2,
@@ -68,8 +67,7 @@ export const fieldsSeed = [
     identifier: "2",
     display: "Selecione o município",
     type: "select",
-    data: "table: cities",
-    dataFields: '{"identifier":"id", "title":"name"}',
+    data: '{"type":"data_table","src":"cities (id as id, name as title)"}',
     dataWhere: '{"field":"id", "from_another_selection": "1"}',
   },
   {
@@ -79,7 +77,7 @@ export const fieldsSeed = [
     identifier: "3",
     display: "Categoria do Municipio (Estrutura Orgânica Tipo)",
     type: "select",
-    data: "array: [A;; B;; C;; D;; E]",
+    data: '{"type":"list","src":[{"id":1,"title":"A"},{"id":2,"title":"B"},{"id":3,"title":"C"},{"id":4,"title":"D"},{"id":5,"title":"E"}]}',
     description: "Estrutura orgânica",
   },
 
@@ -163,7 +161,7 @@ export const fieldsSeed = [
     sectionId: 2,
     display: "Existem Funcionarios formados nas seguintes áreas:",
     type: "checkbox",
-    data: "array: [Arquitetura;; Engenharia Civil;; Engenharia Geografica;; Construção Civil;; Topografia;; Recursos Humanos;; Economia]",
+    data: '{"type":"list","src":[{"id":1,"title":"Arquitetura"},{"id":2,"title":"Engenharia Civil"},{"id":3,"title":"Engenharia Geografica"},{"id":4,"title":"Construção Civil"},{"id":5,"title":"Topografia"},{"id":6,"title":"Recursos Humanos"},{"id":7,"title":"Economia"}]}',
     extraField: '{"type":"number", "display": "Quantidade", "trigger":true}',
     // Trigger -> o valor que sera necessário para habiltar o campo optional
     // Pode ser "true" | "false" | "any"
@@ -468,7 +466,7 @@ export const fieldsSeed = [
     sectionId: 5,
     display: "Se Sim qual é o Estado de Conservação?",
     type: "radio",
-    data: "array: [Bom;; Regular;; Mau]",
+    data: '{"type":"list","src":[{"id":1,"title":"Bom"},{"id":2,"title":"Regular"},{"id":3,"title":"Mau"}]}',
   },
   // Section06
   {

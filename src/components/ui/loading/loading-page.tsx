@@ -9,8 +9,8 @@ interface Props {
 
 export function LoadingPage(props: Props) {
   const {
-    backgroundColor = "#00000050",
-    color = "#FFF",
+    backgroundColor = "transparent",
+    color = "#000",
     size = "small",
   } = props;
 

@@ -35,9 +35,6 @@ export async function listFormsFields(params?: ListFormsFieldsParams) {
       identifier: true,
       required: true,
       data: true,
-      data_fields: {
-        as: "dataFields",
-      },
       data_where: {
         as: "dataWhere",
       },

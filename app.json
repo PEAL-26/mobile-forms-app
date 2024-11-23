@@ -24,12 +24,6 @@
     },
     "plugins": [
       "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "backgroundColor": "#000"
-        }
-      ],
       "expo-sqlite"
     ],
     "experiments": {

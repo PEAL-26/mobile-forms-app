@@ -26,5 +26,6 @@ export async function listFormsWithCountCollections(params?: ListFormsParams) {
     where: {
       name: query,
     },
+    orderBy: [{ created_at: "desc" }],
   });
 }
