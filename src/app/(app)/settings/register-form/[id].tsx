@@ -48,7 +48,7 @@ export default function RegisterFormScreen() {
       {/* Header */}
       <View className="flex-row flex items-center w-full justify-between  bg-white gap-3 border-b border-b-gray-200 elevation-lg p-3 h-12">
         <View className="flex-row flex items-center gap-3">
-          <Button icon={ArrowLeftIcon} onPress={() => router.back()} />
+          <Button icon={ArrowLeftIcon} onPress={() => router.push("/(app)/settings")} />
           <Text className="font-bold text-lg">
             {params.id !== "undefined"
               ? "Editar formulário"

@@ -53,7 +53,7 @@ export default function CollectDataScreen() {
             </Button>
             {/* <Text className="font-normal text-xs">{`Secção ${currentStep} de ${totalSteps}`}</Text> */}
           </View>
-          <Button onPress={() => router.back()}>Cancelar</Button>
+          <Button onPress={() => router.push("/(app)")}>Cancelar</Button>
         </View>
 
         {!form && (

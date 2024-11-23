@@ -7,6 +7,7 @@ export function getNumberComponent(
   return (
     <Input
       value={defaultData}
+      placeholder="Número"
       onChangeText={(text) => onChange?.(text ? Number(text) : undefined)}
       keyboardType="number-pad"
       returnKeyType="done"
