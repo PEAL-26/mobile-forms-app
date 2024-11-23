@@ -67,16 +67,22 @@ export function generateIncludes(
   if (include) {
     const includes = Object.entries(include);
     for (const [key, values] of includes) {
-      const { as, include, select } = values;
-      const queryFields = generateQueryFields(select).map(
-        (field) => `${as}.${field}`
-      );
+      const { singular, as, include, select, type, references } = values;
+      const { left, right } = references || {};
 
-      const tableName = `${key} AS ${as}`;
+      const queryFields = select
+        ? generateQueryFields(select).map((field) => `${as || key}.${field}`)
+        : [];
 
-      const join = `INNER JOIN ${tableName} ON ${as}.id = ${tableMain}.${as}_id`;
+      const tableName = `${key} ${as ? `AS ${as}` : ""}`.trim();
 
-      tables.push(as);
+      const referenceLeft = left || `${as || key}.id`;
+      const referenceRight = right || `${tableMain}.${singular}_id`;
+      const join = `${
+        type || ""
+      } JOIN ${tableName} ON ${referenceLeft} = ${referenceRight} `.trim();
+
+      tables.push(as || key);
       fields.push(...queryFields);
       joins.push(join);
 
@@ -252,4 +258,20 @@ export function generateCreateTableScript(
   const createTableScript = `CREATE TABLE IF NOT EXISTS ${tableName} (${columnsDefinition});`;
 
   return createTableScript;
+}
+
+export function generateFn(fn?: Record<string, string>) {
+  if (!fn) return "";
+
+  let generate = [];
+  for (const [field, value] of Object.entries(fn)) {
+    generate.push(`${value} AS ${field}`);
+  }
+
+  return generate.join(", ");
+}
+
+export function generateGroupBy(group?: string[]) {
+  if (!group || !group.length) return "";
+  return `GROUP BY ${group.join(", ")}`;
 }

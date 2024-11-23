@@ -64,9 +64,11 @@ export function ListingFormsWithCountCollections() {
                   {item.description ?? "S/N"}
                 </Text>
               </View>
-              <Text className="font-bold text-base">
-                {item.collections ?? "0"}
-              </Text>
+              <View className="justify-center items-center w-10">
+                <Text className="font-bold text-xl">
+                  {item.collections ?? "0"}
+                </Text>
+              </View>
             </View>
           </TouchableOpacity>
         )}

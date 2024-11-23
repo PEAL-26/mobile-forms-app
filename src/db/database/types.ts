@@ -18,17 +18,22 @@ export type DatabaseWhere = {
 
 export type DatabaseInclude = {
   [key: string]: {
-    as: string;
+    type?: "INNER" | "LEFT" | "RIGHT";
+    as?: string;
+    singular: string;
     select?: DatabaseConfigSelect;
     include?: DatabaseInclude;
+    references?: { left: string; right: string };
   };
 };
 
 export type DatabaseConfig = {
   select?: DatabaseConfigSelect;
+  fn?: Record<string, string>;
   where?: DatabaseWhere;
   include?: DatabaseInclude;
   orderBy?: Record<string, "asc" | "desc">[];
+  groupBy?: string[];
 };
 
 export interface ListPaginateConfigs extends DatabaseConfig {

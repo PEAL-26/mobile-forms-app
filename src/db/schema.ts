@@ -99,7 +99,7 @@ export const formation = sqliteTable("formations", {
 export const dataCollection = sqliteTable("data_collection", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
   identifier: text("identifier").notNull(),
-  formFieldId: integer("formField_id", { mode: "number" })
+  formFieldId: integer("form_field_id", { mode: "number" })
     .references(() => formField.id)
     .notNull(),
   field: text("field").notNull(),

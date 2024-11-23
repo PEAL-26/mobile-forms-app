@@ -10,6 +10,8 @@ import {
 import {
   fieldsMap,
   generateCreateFields,
+  generateFn,
+  generateGroupBy,
   generateIncludes,
   generateOrderByClause,
   generateQueryFields,
@@ -44,7 +46,7 @@ export class DatabaseSQLite implements IDatabase {
     tableName: string,
     data: Record<string, any>[]
   ): Promise<void> {
-    console.log(data)
+    console.log(data);
     await Promise.all(
       data.map((item) => {
         const { fields, values } = generateCreateFields(item);
@@ -113,6 +115,8 @@ export class DatabaseSQLite implements IDatabase {
       where,
       include,
       orderBy,
+      groupBy,
+      fn,
       size = 10,
       page = 1,
     } = configs || {};
@@ -125,13 +129,15 @@ export class DatabaseSQLite implements IDatabase {
       includes.fields.length > 0
         ? `, ${fieldsMap(includes.fields, includes.tables)}`
         : "";
+    const fns = generateFn(fn);
     const orderByClause = generateOrderByClause(orderBy);
+    const groups = generateGroupBy(groupBy);
 
     const baseQuery = `SELECT ${fieldsMap(fields, [
       tableName,
-    ])}${includesFields} FROM ${tableName} ${
+    ])}${includesFields}${fns ? `, ${fns}` : ""} FROM ${tableName} ${
       includes.joins
-    } ${whereClause} ${orderByClause}`;
+    } ${whereClause} ${groups} ${orderByClause}`;
 
     // Consulta para contar o total de itens
     const totalItemsQuery = `SELECT COUNT(*) as count FROM (${baseQuery}) as total_count_query`;

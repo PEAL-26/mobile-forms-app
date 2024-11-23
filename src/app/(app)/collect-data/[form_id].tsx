@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
 
 import { Button } from "@/components/ui/button";
-import { formGetByIdService } from "@/services/forms";
+import { getFormByIdService } from "@/services/forms";
 import { ListingFormsModal } from "@/components/modals/listing-forms-modal";
 import { RegisterDataCollections } from "@/components/templates/register-data-collections";
 
@@ -24,7 +24,7 @@ export default function CollectDataScreen() {
 
   const { data: form = null, isLoading } = useQuery({
     queryFn: () => {
-      return formId ? formGetByIdService(formId) : null;
+      return formId ? getFormByIdService(formId) : null;
     },
     queryKey: ["form", formId],
   });

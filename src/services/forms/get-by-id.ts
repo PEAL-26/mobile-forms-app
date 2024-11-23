@@ -4,9 +4,10 @@ export type FormGetByIdResponseData = {
   id: number;
   name: string;
   description: string | null;
+  collections: number;
 };
 
-export async function formGetByIdService(id: number) {
+export async function getFormByIdService(id: number) {
   return db.getFirst<FormGetByIdResponseData>("forms", {
     select: {
       id: true,

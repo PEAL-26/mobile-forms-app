@@ -20,24 +20,33 @@ export function useSeeds(props: Props) {
   const seed = useCallback(async () => {
     try {
       if (migrated) {
-        const [[province], [city], [formsField], [section], [form]] =
-          await Promise.all([
-            connection.all<{ count: number }>(
-              "select count(*) as count from provinces"
-            ),
-            connection.all<{ count: number }>(
-              "select count(*) as count from cities"
-            ),
-            connection.all<{ count: number }>(
-              "select count(*) as count from forms_fields"
-            ),
-            connection.all<{ count: number }>(
-              "select count(*) as count from sections"
-            ),
-            connection.all<{ count: number }>(
-              "select count(*) as count from forms"
-            ),
-          ]);
+        const [
+          [province],
+          [city],
+          [formsField],
+          [section],
+          [form],
+          [dataTable],
+        ] = await Promise.all([
+          connection.all<{ count: number }>(
+            "select count(*) as count from provinces"
+          ),
+          connection.all<{ count: number }>(
+            "select count(*) as count from cities"
+          ),
+          connection.all<{ count: number }>(
+            "select count(*) as count from forms_fields"
+          ),
+          connection.all<{ count: number }>(
+            "select count(*) as count from sections"
+          ),
+          connection.all<{ count: number }>(
+            "select count(*) as count from forms"
+          ),
+          connection.all<{ count: number }>(
+            "select count(*) as count from data_tables"
+          ),
+        ]);
 
         if (province.count === 0) {
           await Promise.all(
@@ -82,6 +91,18 @@ export function useSeeds(props: Props) {
                 }, "${form.name}", ${
                   form.description ? `"${form.description}"` : null
                 });`
+              )
+            )
+          );
+        }
+
+        if (dataTable.count === 0) {
+          await Promise.all(
+            ["provinces", "cities", "formations"].map((name, index) =>
+              connection.run(
+                `INSERT INTO  data_tables (id, name) VALUES (${
+                  index + 1
+                }, "${name}");`
               )
             )
           );

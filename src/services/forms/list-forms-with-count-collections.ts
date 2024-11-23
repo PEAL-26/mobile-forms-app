@@ -19,13 +19,44 @@ export async function listFormsWithCountCollections(params?: ListFormsParams) {
     select: {
       id: true,
       name: true,
-      description: true,
+    },
+    fn: {
+      collections: "count(dc.identifier)",
     },
     page,
     size,
     where: {
-      name: query,
+      name: {
+        as: "forms.name",
+        value: query,
+      },
     },
-    orderBy: [{ created_at: "desc" }],
+    orderBy: [
+      {
+        "dc.updated_at": "desc",
+      },
+    ],
+    include: {
+      forms_fields: {
+        as: "ff",
+        singular: "form_field",
+        type: "LEFT",
+        references: {
+          left: "ff.form_id",
+          right: "forms.id",
+        },
+        include: {
+          data_collection: {
+            as: "dc",
+            singular: "data_collection",
+            type: "LEFT",
+            references: {
+              left: "dc.form_field_id",
+              right: "ff.id",
+            },
+          },
+        },
+      },
+    },
   });
 }
