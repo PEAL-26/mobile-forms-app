@@ -1,10 +1,13 @@
-import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core";
+import { sql } from "drizzle-orm";
 import * as t from "drizzle-orm/sqlite-core";
+import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core";
 
 export const form = sqliteTable("forms", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
   name: text("name").notNull(),
   description: text("description"),
+  createdAt: integer("created_at", { mode: "timestamp" }).default(sql`current_timestamp`),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).default(sql`current_timestamp`),
 });
 
 export enum FIELD_TYPE_ENUM {
@@ -15,6 +18,11 @@ export enum FIELD_TYPE_ENUM {
   "select" = "select",
   "text" = "text",
   "text_long" = "text_long",
+}
+
+export enum DATA_TYPE_ENUM {
+  "array" = "array",
+  "table" = "table",
 }
 
 export type FieldType = keyof typeof FIELD_TYPE_ENUM;
@@ -33,6 +41,8 @@ export const section = sqliteTable("sections", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
   name: text("name").notNull(),
   description: text("description"),
+  createdAt: integer("created_at", { mode: "timestamp" }).default(sql`current_timestamp`),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).default(sql`current_timestamp`),
 });
 
 export const formField = sqliteTable("forms_fields", {
@@ -46,21 +56,23 @@ export const formField = sqliteTable("forms_fields", {
   type: t.text("type").$type<FieldType>().default("text").notNull(),
   identifier: text("identifier").notNull(),
 
-  data: text("data"),
+  data: text("data", { mode: "json" }),
   // array: [Item1;; Item2] || table: TableName
 
-  dataFields: text("data_fields"),
+  // dataFields: text("data_fields"),
   // {identifier:string, title:string}
 
-  dataWhere: text("data_where"),
+  dataWhere: text("data_where", { mode: "json" }),
   // {field:string, value:string, from_another_selection: string}
   // from_another_selection -> informar o identificador do campo
   // se for a partir de outra infromação selecionada a partir de outro select, o {field} deve ser o campo a ser levado em conta do outro select, e o from_another_selection deve ser informado o valor do identificador do outro select
-  extraField: text("extra_field"),
-  // {indentifier:string, type:string, display: string}
+  extraField: text("extra_field", { mode: "json" }),
+  // {identifier:string, type:string, display: string}
   // field: nome do campo, type: tipo de dado
 
   description: text("description"),
+  createdAt: integer("created_at", { mode: "timestamp" }).default(sql`current_timestamp`),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).default(sql`current_timestamp`),
 });
 
 export const province = sqliteTable("provinces", {
@@ -93,4 +105,6 @@ export const dataCollection = sqliteTable("data_collection", {
   field: text("field").notNull(),
   type: t.text().$type<FieldType>().default("text"),
   value: text("value").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).default(sql`current_timestamp`),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).default(sql`current_timestamp`),
 });

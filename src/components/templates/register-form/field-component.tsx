@@ -15,19 +15,27 @@ interface Props {
   field: FormFieldSchemaType;
   onRemoveField?(): void;
   onOpenDataTypeModal?(): void;
+  onOpenSectionModal?(): void;
 }
 
 export const FieldComponent = memo((props: Props) => {
-  const { field, onRemoveField, onOpenDataTypeModal } = props;
+  const { field, onRemoveField, onOpenDataTypeModal, onOpenSectionModal } =
+    props;
 
   return (
     <View className="flex flex-col gap-2 ">
       <Input placeholder="Título *" />
       <Textarea placeholder="Descrição (opcional)" />
       <Select
-        items={[]}
         placeholder="Secção (opcional)"
         containerClassName="flex-1"
+        openOutside
+        defaultItem={
+          field.section
+            ? { id: String(field.section.id), title: field.section.name }
+            : undefined
+        }
+        onOpenOutside={onOpenSectionModal}
       />
       <Select
         placeholder="Tipo de dados"

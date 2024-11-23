@@ -28,6 +28,7 @@ export type DatabaseConfig = {
   select?: DatabaseConfigSelect;
   where?: DatabaseWhere;
   include?: DatabaseInclude;
+  orderBy?: Record<string, "asc" | "desc">[];
 };
 
 export interface ListPaginateConfigs extends DatabaseConfig {
@@ -43,3 +44,7 @@ export interface PaginatedResult<T> {
   prev: number | null;
   next: number | null;
 }
+
+export type UpdateBulkData = Record<string, any> & {
+  id: string;
+};

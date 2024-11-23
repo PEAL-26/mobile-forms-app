@@ -5,10 +5,13 @@ import {
   Field,
   ListPaginateConfigs,
   PaginatedResult,
+  UpdateBulkData,
 } from "./types";
 import {
   fieldsMap,
+  generateCreateFields,
   generateIncludes,
+  generateOrderByClause,
   generateQueryFields,
   generateWhereClause,
   serialize,
@@ -21,12 +24,32 @@ export class DatabaseSQLite implements IDatabase {
     return this.connection.getAllAsync(sql);
   }
 
-  async insert<T>(data: Record<string, any>): Promise<T> {
-    // const result = await this.connection.runAsync("");
+  async insert<T>(tableName: string, data: Record<string, any>): Promise<T> {
+    const { fields, values } = generateCreateFields(data);
+
+    const result = await this.connection.runAsync(
+      `INSERT INTO ${tableName} (${fields.join(", ")}) VALUES (${values.join(
+        ", "
+      )});`
+    );
+    data.id = result.lastInsertRowId;
+
+    return data as T;
+  }
+
+  insertBulk<T>(tableName: string, data: Record<string, any>[]): Promise<T[]> {
     throw new Error("Method not implemented.");
   }
 
-  update<T>(data: Record<string, any>, id: string): Promise<T> {
+  update<T>(
+    tableName: string,
+    data: Record<string, any>,
+    id: string
+  ): Promise<T> {
+    throw new Error("Method not implemented.");
+  }
+
+  updateBulk<T>(tableName: string, data: UpdateBulkData[]): Promise<T[]> {
     throw new Error("Method not implemented.");
   }
 
@@ -70,7 +93,14 @@ export class DatabaseSQLite implements IDatabase {
     tableName: string,
     configs?: ListPaginateConfigs
   ): Promise<PaginatedResult<T>> {
-    const { select, where, include, size = 10, page = 1 } = configs || {};
+    const {
+      select,
+      where,
+      include,
+      orderBy,
+      size = 10,
+      page = 1,
+    } = configs || {};
     const fields = generateQueryFields(select);
     const includes = generateIncludes(tableName, include);
     const offset = (page - 1) * size;
@@ -80,10 +110,13 @@ export class DatabaseSQLite implements IDatabase {
       includes.fields.length > 0
         ? `, ${fieldsMap(includes.fields, includes.tables)}`
         : "";
+    const orderByClause = generateOrderByClause(orderBy);
 
     const baseQuery = `SELECT ${fieldsMap(fields, [
       tableName,
-    ])}${includesFields} FROM ${tableName} ${includes.joins} ${whereClause}`;
+    ])}${includesFields} FROM ${tableName} ${
+      includes.joins
+    } ${whereClause} ${orderByClause}`;
 
     // Consulta para contar o total de itens
     const totalItemsQuery = `SELECT COUNT(*) as count FROM (${baseQuery}) as total_count_query`;

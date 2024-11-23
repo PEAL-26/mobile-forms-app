@@ -5,64 +5,15 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1731862958498,
-      "tag": "0000_striped_paladin",
+      "when": 1732318408662,
+      "tag": "0000_spotty_switch",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "6",
-      "when": 1731864509848,
-      "tag": "0001_open_silhouette",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1731867308579,
-      "tag": "0002_lucky_electro",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "6",
-      "when": 1731872295117,
-      "tag": "0003_glossy_jasper_sitwell",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "6",
-      "when": 1731893079513,
-      "tag": "0004_small_stranger",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "6",
-      "when": 1732058263391,
-      "tag": "0005_curvy_maria_hill",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "6",
-      "when": 1732068574045,
-      "tag": "0006_shocking_mongu",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "6",
-      "when": 1732100488267,
-      "tag": "0007_warm_runaways",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "6",
-      "when": 1732269526175,
-      "tag": "0008_clever_obadiah_stane",
+      "when": 1732318675007,
+      "tag": "0001_tranquil_maelstrom",
       "breakpoints": true
     }
   ]

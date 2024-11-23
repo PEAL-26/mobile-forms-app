@@ -2,7 +2,7 @@ import uuid from "react-native-uuid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
 
-import { FormSchemaType, formSchema } from "./schema";
+import { FormFieldSchemaType, FormSchemaType, formSchema } from "./schema";
 
 import { RegisterFormProps } from "./types";
 import { useQueryPagination } from "@/hooks/use-query-pagination";
@@ -38,25 +38,19 @@ export function useRegisterForm(props: RegisterFormProps) {
     append({
       identifier: uuid.v4(),
       type: FIELD_TYPE_ENUM.text,
+      display: "",
+      section: fields.slice(-1)?.[0]?.section,
     });
   };
 
-  const handleUpdateField = (identifier: string, data: any) => {
-    const index = fields.findIndex((f) => f.identifier === identifier);
-    const field = fields[index];
-    if (field) {
-      update(index, { ...field });
-    }
-  };
-
-  const handleUpdateDataTypeField = (
+  const handleUpdateField = (
     identifier: string,
-    type: FIELD_TYPE_ENUM
+    data: Partial<FormFieldSchemaType>
   ) => {
     const index = fields.findIndex((f) => f.identifier === identifier);
     const field = fields[index];
     if (field) {
-      update(index, { ...field, type });
+      update(index, { ...field, ...data });
     }
   };
 
@@ -74,6 +68,5 @@ export function useRegisterForm(props: RegisterFormProps) {
     handleAddField,
     handleUpdateField,
     handleRemoveField,
-    handleUpdateDataTypeField,
   };
 }

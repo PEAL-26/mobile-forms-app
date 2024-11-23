@@ -163,3 +163,38 @@ function setNestedValue(
     current = current[key];
   });
 }
+
+export function generateOrderByClause(
+  orderBy?: Record<string, "asc" | "desc">[]
+): string {
+  if (!orderBy || orderBy.length === 0) {
+    return "";
+  }
+
+  const orderByClauses = orderBy
+    .map((item) => {
+      const [column, direction] = Object.entries(item)[0];
+      return `${column} ${direction.toUpperCase()}`;
+    })
+    .join(", ");
+
+  return `ORDER BY ${orderByClauses}`;
+}
+
+const NOT_STRING_TYPES = ["boolean", "number"];
+
+export function generateCreateFields(data: Record<string, any>) {
+  let fields: string[] = [];
+  let values: string[] = [];
+  for (const [field, value] of Object.entries(data)) {
+    fields.push(field);
+
+    if (NOT_STRING_TYPES.includes(typeof value)) {
+      values.push(value);
+    } else {
+      values.push(`"${value}"`);
+    }
+  }
+  
+  return { fields, values };
+}

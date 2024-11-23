@@ -1,11 +1,11 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "83e7040f-2e10-444c-93c0-23d0fab2bbe1",
-  "prevId": "8c3e52de-bfff-406b-bb7d-8d0495fef19a",
+  "id": "69de4fde-2864-4efc-a902-73bc2804a945",
+  "prevId": "0c12d230-2050-4a57-a0a2-f4810f6034d9",
   "tables": {
-    "city": {
-      "name": "city",
+    "cities": {
+      "name": "cities",
       "columns": {
         "id": {
           "name": "id",
@@ -14,8 +14,8 @@
           "notNull": true,
           "autoincrement": true
         },
-        "section_id": {
-          "name": "section_id",
+        "province_id": {
+          "name": "province_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
@@ -31,12 +31,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "city_section_id_province_id_fk": {
-          "name": "city_section_id_province_id_fk",
-          "tableFrom": "city",
-          "tableTo": "province",
+        "cities_province_id_provinces_id_fk": {
+          "name": "cities_province_id_provinces_id_fk",
+          "tableFrom": "cities",
+          "tableTo": "provinces",
           "columnsFrom": [
-            "section_id"
+            "province_id"
           ],
           "columnsTo": [
             "id"
@@ -49,8 +49,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "fields": {
-      "name": "fields",
+    "data_collection": {
+      "name": "data_collection",
       "columns": {
         "id": {
           "name": "id",
@@ -59,8 +59,22 @@
           "notNull": true,
           "autoincrement": true
         },
-        "display": {
-          "name": "display",
+        "identifier": {
+          "name": "identifier",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "formField_id": {
+          "name": "formField_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "field": {
+          "name": "field",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -73,10 +87,47 @@
           "notNull": false,
           "autoincrement": false,
           "default": "'text'"
+        },
+        "value": {
+          "name": "value",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "current_timestamp"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "current_timestamp"
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "data_collection_formField_id_forms_fields_id_fk": {
+          "name": "data_collection_formField_id_forms_fields_id_fk",
+          "tableFrom": "data_collection",
+          "tableTo": "forms_fields",
+          "columnsFrom": [
+            "formField_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}
@@ -97,6 +148,29 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "current_timestamp"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "current_timestamp"
         }
       },
       "indexes": {},
@@ -122,26 +196,86 @@
           "notNull": false,
           "autoincrement": false
         },
-        "field_id": {
-          "name": "field_id",
+        "required": {
+          "name": "required",
           "type": "integer",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": false
         },
         "section_id": {
           "name": "section_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
-        "name": {
-          "name": "name",
+        "display": {
+          "name": "display",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'text'"
+        },
+        "identifier": {
+          "name": "identifier",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "data": {
+          "name": "data",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        },
+        "data_where": {
+          "name": "data_where",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "extra_field": {
+          "name": "extra_field",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "current_timestamp"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "current_timestamp"
         }
       },
       "indexes": {},
@@ -152,19 +286,6 @@
           "tableTo": "forms",
           "columnsFrom": [
             "form_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "forms_fields_field_id_fields_id_fk": {
-          "name": "forms_fields_field_id_fields_id_fk",
-          "tableFrom": "forms_fields",
-          "tableTo": "fields",
-          "columnsFrom": [
-            "field_id"
           ],
           "columnsTo": [
             "id"
@@ -221,193 +342,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "needs": {
-      "name": "needs",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": true
-        },
-        "form_id": {
-          "name": "form_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "province_id": {
-          "name": "province_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "city_id": {
-          "name": "city_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "category": {
-          "name": "category",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "needs_form_id_forms_id_fk": {
-          "name": "needs_form_id_forms_id_fk",
-          "tableFrom": "needs",
-          "tableTo": "forms",
-          "columnsFrom": [
-            "form_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "needs_province_id_province_id_fk": {
-          "name": "needs_province_id_province_id_fk",
-          "tableFrom": "needs",
-          "tableTo": "province",
-          "columnsFrom": [
-            "province_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "needs_city_id_city_id_fk": {
-          "name": "needs_city_id_city_id_fk",
-          "tableFrom": "needs",
-          "tableTo": "city",
-          "columnsFrom": [
-            "city_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "needs_forms": {
-      "name": "needs_forms",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": true
-        },
-        "need_id": {
-          "name": "need_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "formField_id": {
-          "name": "formField_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "section_id": {
-          "name": "section_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "field": {
-          "name": "field",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "type": {
-          "name": "type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": "'text'"
-        },
-        "value": {
-          "name": "value",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "needs_forms_need_id_needs_id_fk": {
-          "name": "needs_forms_need_id_needs_id_fk",
-          "tableFrom": "needs_forms",
-          "tableTo": "needs",
-          "columnsFrom": [
-            "need_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "needs_forms_formField_id_forms_fields_id_fk": {
-          "name": "needs_forms_formField_id_forms_fields_id_fk",
-          "tableFrom": "needs_forms",
-          "tableTo": "forms_fields",
-          "columnsFrom": [
-            "formField_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "needs_forms_section_id_sections_id_fk": {
-          "name": "needs_forms_section_id_sections_id_fk",
-          "tableFrom": "needs_forms",
-          "tableTo": "sections",
-          "columnsFrom": [
-            "section_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "province": {
-      "name": "province",
+    "provinces": {
+      "name": "provinces",
       "columns": {
         "id": {
           "name": "id",
@@ -446,6 +382,29 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "current_timestamp"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "current_timestamp"
         }
       },
       "indexes": {},

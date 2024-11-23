@@ -87,13 +87,13 @@ export function useSeeds(props: Props) {
           await Promise.all(
             fieldsSeed.map((field) =>
               connection.run(
-                `INSERT INTO  forms_fields (id, form_id, section_id, display, type, identifier, data, data_fields, data_where, extra_field, description) VALUES (${
+                `INSERT INTO  forms_fields (id, form_id, section_id, display, type, identifier, data, data_where, extra_field, description) VALUES (${
                   field.id
                 }, ${field.formId}, ${field.sectionId}, "${field.display}", "${
                   field.type
                 }", "${field.identifier}", ${stringNullable(
                   field.data
-                )}, ${stringNullable(field.dataFields)}, ${stringNullable(
+                )}, ${stringNullable(
                   field.dataWhere
                 )}, ${stringNullable(field.extraField)}, ${stringNullable(
                   field.description

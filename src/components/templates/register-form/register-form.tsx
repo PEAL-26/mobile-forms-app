@@ -1,21 +1,23 @@
-import { View, ScrollView } from "react-native";
+import { useState } from "react";
 import { PlusIcon } from "lucide-react-native";
+import { View, ScrollView } from "react-native";
 
 import { cn } from "@/lib/utils";
+import { FIELD_TYPE_ENUM } from "@/db";
 import { Text } from "@/components/ui/text";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { FlashList } from "@/components/ui/flash-list";
+import { SeparatorWithLabel } from "@/components/ui/separator";
+import { SectionModal } from "@/components/modals/section-modal";
+import { DataTypeModal } from "@/components/modals/data-type-modal";
 import { PreviewFormModal } from "@/components/modals/preview-form-modal";
 
 import { RegisterFormProps } from "./types";
-import { useRegisterForm } from "./use-register-form";
+import { SectionSchemaType } from "./schema";
 import { FieldComponent } from "./field-component";
-import { SeparatorWithLabel } from "@/components/ui/separator";
-import { DataTypeModal } from "@/components/modals/data-type-modal";
-import { useState } from "react";
-import { FIELD_TYPE_ENUM } from "@/db";
+import { useRegisterForm } from "./use-register-form";
 
 export function RegisterForm(props: RegisterFormProps) {
   const {
@@ -24,15 +26,21 @@ export function RegisterForm(props: RegisterFormProps) {
     handleAddField,
     handleUpdateField,
     handleRemoveField,
-    handleUpdateDataTypeField,
   } = useRegisterForm(props);
 
   const [openDataTypeModal, setOpenDataTypeModal] = useState(false);
+  const [openSectionModal, setOpenSectionModal] = useState(false);
   const [fieldSelect, setFieldSelect] = useState<string | undefined>();
 
   const handleSelectDataType = (type: FIELD_TYPE_ENUM) => {
     if (fieldSelect) {
-      handleUpdateDataTypeField(fieldSelect, type);
+      handleUpdateField(fieldSelect, { type });
+    }
+  };
+
+  const handleUpdateSection = (section: SectionSchemaType) => {
+    if (fieldSelect) {
+      handleUpdateField(fieldSelect, { section });
     }
   };
 
@@ -56,6 +64,10 @@ export function RegisterForm(props: RegisterFormProps) {
                 onOpenDataTypeModal={() => {
                   setFieldSelect(item.identifier);
                   setOpenDataTypeModal(true);
+                }}
+                onOpenSectionModal={() => {
+                  setFieldSelect(item.identifier);
+                  setOpenSectionModal(true);
                 }}
               />
             )}
@@ -87,6 +99,13 @@ export function RegisterForm(props: RegisterFormProps) {
           open={openDataTypeModal}
           onClose={setOpenDataTypeModal}
           onSelect={handleSelectDataType}
+        />
+      )}
+      {openSectionModal && (
+        <SectionModal
+          open={openSectionModal}
+          onClose={setOpenSectionModal}
+          onSelect={handleUpdateSection}
         />
       )}
     </>

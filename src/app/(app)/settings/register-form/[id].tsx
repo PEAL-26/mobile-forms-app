@@ -30,7 +30,7 @@ export default function RegisterFormScreen() {
   });
 
   if (isLoading) {
-    return <LoadingPage />;
+    return <LoadingPage backgroundColor="transparent" />;
   }
 
   if (isError) {

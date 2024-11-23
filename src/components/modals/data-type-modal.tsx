@@ -55,6 +55,7 @@ export function DataTypeModal(props: Props) {
               <View className="px-3 py-3 gap-3 flex-row flex-wrap">
                 {Object.entries(FIELD_TYPE_MAP).map(([key, value]) => (
                   <TouchableOpacity
+                  key={key}
                     activeOpacity={0.6}
                     onPress={() => setTypeSelect(key as FIELD_TYPE_ENUM)}
                   >

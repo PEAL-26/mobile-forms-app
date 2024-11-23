@@ -3,6 +3,7 @@ import {
   Field,
   ListPaginateConfigs,
   PaginatedResult,
+  UpdateBulkData,
 } from "./types";
 
 export abstract class IDatabase {
@@ -19,8 +20,20 @@ export abstract class IDatabase {
     tableName: string,
     configs?: ListPaginateConfigs
   ): AsyncIterableIterator<T>;
-  abstract insert<T>(data: Record<string, any>): Promise<T>;
-  abstract update<T>(data: Record<string, any>, id: string): Promise<T>;
+  abstract insert<T>(tableName: string, data: Record<string, any>): Promise<T>;
+  abstract insertBulk<T>(
+    tableName: string,
+    data: Record<string, any>[]
+  ): Promise<T[]>;
+  abstract update<T>(
+    tableName: string,
+    data: Record<string, any>,
+    id: string
+  ): Promise<T>;
+  abstract updateBulk<T>(
+    tableName: string,
+    data: UpdateBulkData[]
+  ): Promise<T[]>;
   abstract delete<T>(id: string): Promise<T>;
   abstract select<T>(fields: Field<T>, tableName: string): Promise<T[]>;
   abstract getFirst<T>(
