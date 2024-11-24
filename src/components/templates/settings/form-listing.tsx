@@ -37,7 +37,7 @@ export function SettingFormListing() {
     loadNextPageData,
   } = useQueryPagination({
     fn: ({ page }) => listForms({ page, query: debouncedQuery }),
-    queryKey: ["forms", debouncedQuery],
+    queryKey: ["settings_forms", debouncedQuery],
   });
 
   return (

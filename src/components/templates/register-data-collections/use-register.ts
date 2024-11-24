@@ -1,4 +1,6 @@
-import { useFieldArray, useForm } from "react-hook-form";
+import { FieldErrors, useFieldArray, useForm } from "react-hook-form";
+import uuid from "react-native-uuid";
+
 import {
   dataCollectionSchema,
   DataCollectionSchemaType,
@@ -11,28 +13,12 @@ import { Alert } from "react-native";
 import { FIELD_TYPE_ENUM } from "@/db";
 import { useQueryPagination } from "@/hooks/use-query-pagination";
 import { listFormsFields, ListFormsFieldsResponseData } from "@/services/forms";
+import { createDataCollectionsService } from "@/services/data-collections";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function useRegister(props: RegisterDataCollectionsProps) {
   const { form: collectionsForm, onLoadingPage: onLoading } = props;
   const [isLoadingPage, setIsLoadingPage] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-
-  const form = useForm<DataCollectionSchemaType>({
-    resolver: zodResolver(dataCollectionSchema),
-    mode: "onChange",
-    defaultValues: {
-      form: collectionsForm,
-    },
-  });
-
-  const {
-    fields: collections,
-    update,
-    append,
-  } = useFieldArray({
-    control: form.control,
-    name: "collections",
-  });
 
   const {
     data,
@@ -45,11 +31,32 @@ export function useRegister(props: RegisterDataCollectionsProps) {
     loadNextPageData,
   } = useQueryPagination({
     fn: ({ page }) => listFormsFields({ page, formId: collectionsForm?.id }),
-    queryKey: ["forms_fields"],
+    queryKey: ["forms_fields", collectionsForm?.id],
   });
 
+  const form = useForm<DataCollectionSchemaType>({
+    resolver: zodResolver(dataCollectionSchema),
+    mode: "onSubmit",
+    defaultValues: {
+      form: collectionsForm,
+    },
+  });
+
+  const { fields: collections, update } = useFieldArray({
+    control: form.control,
+    name: "collections",
+  });
+
+  const queryClient = useQueryClient();
+  const [isSaving, setIsSaving] = useState(false);
   const handleSubmitOnConfirm = async (input: DataCollectionSchemaType) => {
+    // console.log(JSON.stringify(input.collections, null, 2));
+    if (isSaving) return;
+
+    const identifier = uuid.v4();
+
     const data = input.collections.map((item) => ({
+      identifier,
       formFieldId: item.fields.formFieldId,
       field: item.fields.display,
       type: item.fields.type,
@@ -58,11 +65,10 @@ export function useRegister(props: RegisterDataCollectionsProps) {
 
     try {
       setIsSaving(true);
-      // await db.insertBulk(data);
-
-      setTimeout(() => {
-        setIsSaving(false);
-      }, 1000);
+      await createDataCollectionsService(data);
+      queryClient.invalidateQueries({
+        queryKey: ["data-collection-group-by-form", collectionsForm?.id],
+      });
     } catch (error) {
       Alert.alert(
         "Oops! Falha ao guardar!",
@@ -70,23 +76,28 @@ export function useRegister(props: RegisterDataCollectionsProps) {
       );
       console.error(error);
     } finally {
-      // setIsSaving(false);
+      setIsSaving(false);
     }
   };
 
   const handleSubmit = (data: DataCollectionSchemaType) => {
-    const { form, collections } = data;
-    if (!form?.id) {
+    if (!data.form?.id) {
       return Alert.alert("Campos Obrigatórios.", "Selecione um formulário");
     }
 
-    const requireFill = collections.some(
-      (collection) => collection.fields.required && !collection.value
-    );
+    const requireFill = data.collections.some((collection, index) => {
+      const required = collection.fields.required && !collection.value;
+      form.setError(`collections.${index}.value`, {
+        message: "Campo Obrigatório.",
+      });
+
+      return required;
+    });
+
     if (requireFill) {
       Alert.alert(
         "Campos Obrigatórios.",
-        "Alguns campos é de preenchimento Obrigatórios."
+        "Alguns campos é de preenchimento Obrigatório."
       );
 
       return;
@@ -95,16 +106,21 @@ export function useRegister(props: RegisterDataCollectionsProps) {
     handleSubmitOnConfirm(data);
   };
 
-  const handleUpdate = (identifier: string, data: DataUpdate) => {
+  const onError = (errors: FieldErrors<DataCollectionSchemaType>) => {
+    console.error({ errors: JSON.stringify(errors.collections, null, 2) });
+  };
+
+  const handleUpdate = (identifier: string, value: any) => {
     const findIndex = collections.findIndex(
       (c) => c.fields.identifier === identifier
     );
     const collection = collections[findIndex];
     if (!collection) return;
 
+    form.clearErrors(`collections.${findIndex}.value`);
     update(findIndex, {
       ...collection,
-      ...data,
+      value,
     });
   };
 
@@ -147,22 +163,32 @@ export function useRegister(props: RegisterDataCollectionsProps) {
   };
 
   useEffect(() => {
-    for (const item of data) {
-      // append({
-      //   fields: {
-      //     ...item,
-      //     formFieldId: item.id,
-      //   },
-      //   value: startData(item),
-      // });
-    }
-  }, [append, data]);
+    const parseJSON = (str?: string | null) => {
+      if (!str) return null;
+      return JSON.parse(str);
+    };
+
+    const dataCollections = data.map((item) => {
+      return {
+        fields: {
+          ...item,
+          formFieldId: item.id,
+          required: !!item.required,
+          data: parseJSON(item.data),
+          dataWhere: parseJSON(item.dataWhere),
+          extraField: parseJSON(item.extraField),
+        },
+        value: startData(item),
+      };
+    });
+    form.setValue("collections", dataCollections);
+  }, [form, data]);
 
   return {
     collections: data,
     form,
     isLoadingPage,
-    handleSubmit: form.handleSubmit(handleSubmit),
+    handleSubmit: form.handleSubmit(handleSubmit, onError),
     handleUpdate,
     isLoadingAll,
     isEmpty,

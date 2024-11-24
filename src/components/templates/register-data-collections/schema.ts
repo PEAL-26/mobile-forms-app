@@ -11,27 +11,26 @@ const fieldSchema = z.object({
   formFieldId: z.number(),
   section: z
     .object({
-      id: z.number(),
-      name: z.string(),
+      id: z.number().nullable(),
+      name: z.string().nullable(),
       description: z.string().nullable(),
     })
-    .nullable(),
+    .nullable()
+    .optional(),
   required: z.boolean().default(false),
   display: z.string(),
   type: z.nativeEnum(FIELD_TYPE_ENUM),
   identifier: z.string(),
-  data: z.string().nullable(),
-  dataFields: z.string().nullable(),
-  dataWhere: z.string().nullable(),
-  extraField: z.string().nullable(),
-  description: z.string().nullable(),
+  data: z.object({}).nullable(),
+  dataWhere: z.object({}).nullable(),
+  extraField: z.object({}).nullable(),
+  description: z.object({}).nullable(),
 });
 
 const collectionSchema = z.object({
   fields: fieldSchema,
+  identifier: z.string().optional(),
   value: z.any(),
-  extraFieldDisplay: z.string().optional(),
-  extraFieldValue: z.any().optional(),
 });
 
 const dataCollectionFormSchema = z.object({

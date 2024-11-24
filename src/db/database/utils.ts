@@ -33,13 +33,19 @@ export function generateWhereClause(where?: DatabaseWhere): string {
   const conditions = Object.entries(where).map(([key, condition]) => {
     let column = key;
     let value: DatabaseWhereField = condition;
+    let op = "equal";
     if (typeof condition === "object") {
       column = condition.as || key;
       value = condition.value !== undefined ? condition.value : undefined;
+      op = condition.op || "equal";
     }
 
     if (value !== undefined) {
-      return `LOWER(${column}) LIKE LOWER('%${value}%')`;
+      const where = {
+        equal: `${column} = '${value}'`,
+        like: `LOWER(${column}) LIKE LOWER('%${value}%')`,
+      }[op];
+      return where || "";
     }
 
     return "";
@@ -262,7 +268,7 @@ export function generateCreateTableScript(
 
 export function generateFn(fn?: Record<string, string>) {
   if (!fn) return "";
-
+  
   let generate = [];
   for (const [field, value] of Object.entries(fn)) {
     generate.push(`${value} AS ${field}`);

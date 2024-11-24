@@ -46,7 +46,6 @@ export class DatabaseSQLite implements IDatabase {
     tableName: string,
     data: Record<string, any>[]
   ): Promise<void> {
-    console.log(data);
     await Promise.all(
       data.map((item) => {
         const { fields, values } = generateCreateFields(item);
@@ -138,7 +137,7 @@ export class DatabaseSQLite implements IDatabase {
     ])}${includesFields}${fns ? `, ${fns}` : ""} FROM ${tableName} ${
       includes.joins
     } ${whereClause} ${groups} ${orderByClause}`;
-
+console.log(baseQuery)
     // Consulta para contar o total de itens
     const totalItemsQuery = `SELECT COUNT(*) as count FROM (${baseQuery}) as total_count_query`;
     const totalItemsResult = await this.connection.getAllAsync<{

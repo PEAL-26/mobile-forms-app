@@ -4,5 +4,11 @@ export function getTextLongComponent(
   defaultData: any,
   onChange?: (data: any) => void
 ) {
-  return <Textarea placeholder="Texto longo" value={defaultData} onChangeText={onChange} />;
+  return (
+    <Textarea
+      placeholder="Texto longo"
+      defaultValue={defaultData}
+      onChangeText={onChange}
+    />
+  );
 }

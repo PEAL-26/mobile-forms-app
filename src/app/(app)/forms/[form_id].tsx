@@ -18,15 +18,19 @@ import { FlashList, setFlashListLoader } from "@/components/ui/flash-list";
 import { listDataCollectionsGroupByFormId } from "@/services/data-collections";
 import { useQueryPagination } from "@/hooks/use-query-pagination";
 import { useWindowDimensions } from "react-native";
+import { useEffect, useState } from "react";
 
 export default function FormDetailsScreen() {
   const params = useGlobalSearchParams<{ form_id: string }>();
   const router = useRouter();
   const window = useWindowDimensions();
 
+  const [isLoadingPage, setIsLoadingPage] = useState(true);
+
   const {
     data: form,
     isLoading,
+    isError,
     refetch,
   } = useQuery({
     queryFn: () => getFormByIdService(Number(params.form_id)),
@@ -41,14 +45,16 @@ export default function FormDetailsScreen() {
     queryKey: ["data-collection-group-by-form", form?.id],
   });
 
-  if (isLoading) {
+  useEffect(() => {
+    setIsLoadingPage(false);
+  }, []);
+
+  if (isLoading || isLoadingPage) {
     return <LoadingPage backgroundColor="transparent" color="#000" />;
   }
 
   if (!form) {
-    return (
-      <NotFoundPage refetch={refetch} title="Formulário não encontrado!" />
-    );
+    return null;
   }
 
   return (
@@ -80,12 +86,12 @@ export default function FormDetailsScreen() {
         refreshing={isLoading}
         renderItem={({ item }) => (
           <Button
-            className="bg-white p-3 rounded mt-3 flex-row items-center justify-between gap-3"
+            style={{ paddingLeft: 12, paddingRight: 12 }}
             onPress={() =>
               router.push(`/forms/collect-data/${item.identifier}`)
             }
           >
-            <>
+            <View className="bg-white p-3 rounded mt-3 flex-row items-center justify-between gap-3">
               <View>
                 <Text className="font-bold line-clamp-1">
                   {new Date(item.updatedAt).toLocaleString()}
@@ -95,7 +101,7 @@ export default function FormDetailsScreen() {
                 <Button icon={() => <Edit2Icon size={20} color="#000" />} />
                 <Button icon={() => <TrashIcon size={20} color="red" />} />
               </View>
-            </>
+            </View>
           </Button>
         )}
         keyExtractor={(item: any) => item.id}
@@ -126,9 +132,7 @@ export default function FormDetailsScreen() {
                 alignItems: "center",
               }}
             >
-              <Text className="text-sm text-center">
-                Sem dados coletados!
-              </Text>
+              <Text className="text-sm text-center">Sem dados coletados!</Text>
             </View>
           ) : null
         }

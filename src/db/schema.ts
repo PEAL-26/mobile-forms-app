@@ -6,8 +6,12 @@ export const form = sqliteTable("forms", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
   name: text("name").notNull(),
   description: text("description"),
-  createdAt: integer("created_at", { mode: "timestamp" }).default(sql`current_timestamp`),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).default(sql`current_timestamp`),
+  createdAt: integer("created_at", { mode: "timestamp" }).default(
+    sql`current_timestamp`
+  ),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).default(
+    sql`current_timestamp`
+  ),
 });
 
 export enum FIELD_TYPE_ENUM {
@@ -41,17 +45,21 @@ export const section = sqliteTable("sections", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
   name: text("name").notNull(),
   description: text("description"),
-  createdAt: integer("created_at", { mode: "timestamp" }).default(sql`current_timestamp`),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).default(sql`current_timestamp`),
+  createdAt: integer("created_at", { mode: "timestamp" }).default(
+    sql`current_timestamp`
+  ),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).default(
+    sql`current_timestamp`
+  ),
 });
 
 export const formField = sqliteTable("forms_fields", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
   formId: integer("form_id", { mode: "number" }).references(() => form.id),
   required: integer("required", { mode: "boolean" }).default(false),
-  sectionId: integer("section_id", { mode: "number" })
-    .references(() => section.id)
-    .notNull(),
+  sectionId: integer("section_id", { mode: "number" }).references(
+    () => section.id
+  ),
   display: text("display").notNull(),
   type: t.text("type").$type<FieldType>().default("text").notNull(),
   identifier: text("identifier").notNull(),
@@ -71,8 +79,12 @@ export const formField = sqliteTable("forms_fields", {
   // field: nome do campo, type: tipo de dado
 
   description: text("description"),
-  createdAt: integer("created_at", { mode: "timestamp" }).default(sql`current_timestamp`),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).default(sql`current_timestamp`),
+  createdAt: integer("created_at", { mode: "timestamp" }).default(
+    sql`current_timestamp`
+  ),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).default(
+    sql`current_timestamp`
+  ),
 });
 
 export const province = sqliteTable("provinces", {
@@ -105,13 +117,21 @@ export const dataCollection = sqliteTable("data_collection", {
   field: text("field").notNull(),
   type: t.text().$type<FieldType>().default("text"),
   value: text("value").notNull(),
-  createdAt: integer("created_at", { mode: "timestamp" }).default(sql`current_timestamp`),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).default(sql`current_timestamp`),
+  createdAt: integer("created_at", { mode: "timestamp" }).default(
+    sql`current_timestamp`
+  ),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).default(
+    sql`current_timestamp`
+  ),
 });
 
 export const dataTable = sqliteTable("data_tables", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
   name: text("name").notNull(),
-  createdAt: integer("created_at", { mode: "timestamp" }).default(sql`current_timestamp`),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).default(sql`current_timestamp`),
+  createdAt: integer("created_at", { mode: "timestamp" }).default(
+    sql`current_timestamp`
+  ),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).default(
+    sql`current_timestamp`
+  ),
 });

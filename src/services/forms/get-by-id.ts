@@ -8,7 +8,7 @@ export type FormGetByIdResponseData = {
 };
 
 export async function getFormByIdService(id: number) {
-  return db.getFirst<FormGetByIdResponseData>("forms", {
+  let form = await db.getFirst<FormGetByIdResponseData>("forms", {
     select: {
       id: true,
       name: true,
@@ -18,4 +18,15 @@ export async function getFormByIdService(id: number) {
       id,
     },
   });
+
+  if (!form) return null;
+  const [dataCollection] = await db.query<{ count: number }>(`
+    SELECT COUNT(DISTINCT (dc.identifier)) as count
+    FROM data_collection dc
+    INNER JOIN forms_fields ff ON ff.id = dc.form_field_id
+    WHERE ff.form_id = ${id}`);
+
+  form.collections = dataCollection.count;
+
+  return form;
 }

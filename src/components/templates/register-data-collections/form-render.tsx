@@ -34,7 +34,8 @@ var lastSection = "";
 var showSection = false;
 const FormRender = memo((props: FormRenderProps) => {
   const { fields, onUpdate, onOpenOutside } = props;
-  if (fields?.section === null) {
+
+  if (!fields?.section?.name) {
     showSection = false;
   } else {
     if (lastSection !== fields?.section?.name) {
@@ -45,11 +46,11 @@ const FormRender = memo((props: FormRenderProps) => {
     }
   }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedOnUpdate = useCallback(
-    (identifier: string, data: any) =>
-      debounce(() => {
-        onUpdate?.(identifier, data);
-      }, 500),
+    debounce((identifier: string, data: any) => {
+      onUpdate?.(identifier, data);
+    }, 300),
     [onUpdate]
   );
 
@@ -69,10 +70,10 @@ const FormRender = memo((props: FormRenderProps) => {
       <RenderComponent
         fields={fields}
         // defaultData={value}
-        onChange={(value) => debouncedOnUpdate(fields.identifier, { value })}
-        onChangeExtras={(extras) =>
-          debouncedOnUpdate(fields.identifier, { value: extras })
-        }
+        onChange={(value) => {
+          debouncedOnUpdate(fields.identifier, value);
+        }}
+        onChangeExtra={(extra) => debouncedOnUpdate(fields.identifier, extra)}
         onOpenOutside={onOpenOutside}
       />
     </View>

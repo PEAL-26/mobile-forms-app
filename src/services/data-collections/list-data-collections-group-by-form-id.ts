@@ -35,6 +35,7 @@ export async function listDataCollectionsGroupByFormId(
       size,
       where: {
         formId: {
+          op: "equal",
           as: "forms_fields.form_id",
           value: formId,
         },

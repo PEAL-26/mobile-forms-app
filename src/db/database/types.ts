@@ -10,6 +10,7 @@ export type DatabaseWhereField =
   | {
       value: DatabaseWhereFieldValue;
       as?: string;
+      op?: "equal" | "like";
     };
 
 export type DatabaseWhere = {

@@ -13,6 +13,7 @@ import { listFormsWithCountCollections } from "@/services/forms";
 import { useQueryPagination } from "@/hooks/use-query-pagination";
 import { FlashList, setFlashListLoader } from "@/components/ui/flash-list";
 import { useRouter } from "expo-router";
+import { Button } from "@/components/ui/button";
 
 export function ListingFormsWithCountCollections() {
   const router = useRouter();
@@ -50,27 +51,28 @@ export function ListingFormsWithCountCollections() {
         data={query && isFetching ? [] : data}
         refreshing={isLoading}
         renderItem={({ item }) => (
-          <TouchableOpacity
-            className="px-3 mb-3"
-            activeOpacity={0.6}
-            onPress={() => router.push(`/(app)/forms/${String(item.id)}`)}
-          >
-            <View className="flex-row items-center justify-between gap-10 bg-white shadow rounded-md py-2 px-3 h-20">
-              <View className="flex-1">
-                <Text className="font-bold text-base line-clamp-1 flex-1">
-                  {item.name}
-                </Text>
-                <Text className="text-xs line-clamp-2 text-gray-500 flex-1">
-                  {item.description ?? "S/N"}
-                </Text>
+          <View style={{ marginBottom: 16 }}>
+            <Button
+              className="px-3"
+              onPress={() => router.push(`/(app)/forms/${String(item.id)}`)}
+            >
+              <View className="flex-row items-center justify-between gap-10 bg-white shadow rounded-md py-2 px-3 h-20">
+                <View className="flex-1">
+                  <Text className="font-bold text-base line-clamp-1 flex-1">
+                    {item.name}
+                  </Text>
+                  <Text className="text-xs line-clamp-2 text-gray-500 flex-1">
+                    {item.description ?? "S/N"}
+                  </Text>
+                </View>
+                <View className="justify-center items-center w-10">
+                  <Text className="font-bold text-xl">
+                    {item.collections ?? "0"}
+                  </Text>
+                </View>
               </View>
-              <View className="justify-center items-center w-10">
-                <Text className="font-bold text-xl">
-                  {item.collections ?? "0"}
-                </Text>
-              </View>
-            </View>
-          </TouchableOpacity>
+            </Button>
+          </View>
         )}
         keyExtractor={(item: any) => item.id}
         refreshControl={
@@ -100,7 +102,7 @@ export function ListingFormsWithCountCollections() {
             </View>
           ) : null
         }
-        ListFooterComponentStyle={{ paddingVertical: 16 }}
+        ListFooterComponentStyle={{ paddingBottom: 100 }}
         estimatedItemSize={80}
         onEndReachedThreshold={0.5}
         showsVerticalScrollIndicator={false}

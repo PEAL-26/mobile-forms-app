@@ -21,12 +21,13 @@ export async function listFormsWithCountCollections(params?: ListFormsParams) {
       name: true,
     },
     fn: {
-      collections: "count(dc.identifier)",
+      forms_collections: "COUNT(DISTINCT(dc.identifier))",
     },
     page,
     size,
     where: {
       name: {
+        op: "like",
         as: "forms.name",
         value: query,
       },
@@ -36,6 +37,7 @@ export async function listFormsWithCountCollections(params?: ListFormsParams) {
         "dc.updated_at": "desc",
       },
     ],
+    groupBy: ["forms.id"],
     include: {
       forms_fields: {
         as: "ff",

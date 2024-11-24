@@ -5,7 +5,6 @@ export type ListFormsFieldsParams = {
   sectionId?: number;
   size?: number;
   page?: number;
-  
 };
 
 export type ListFormsFieldsResponseData = {
@@ -46,7 +45,9 @@ export async function listFormsFields(params?: ListFormsFieldsParams) {
     },
     include: {
       sections: {
+        type: "LEFT",
         singular: "section",
+        as: "section",
         select: {
           id: true,
           name: true,

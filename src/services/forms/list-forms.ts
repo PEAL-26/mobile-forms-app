@@ -21,7 +21,10 @@ export async function listForms(params?: ListFormsParams) {
     page,
     size,
     where: {
-      name: query,
+      name: {
+        op: "like",
+        value: query,
+      },
     },
     orderBy: [{ created_at: "desc" }],
   });

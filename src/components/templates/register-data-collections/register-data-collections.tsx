@@ -23,6 +23,7 @@ export function RegisterDataCollections(props: RegisterDataCollectionsProps) {
   const [selectInfoModal, setSelectInfoModal] = useState("");
 
   const {
+    form,
     collections,
     isLoadingPage,
     handleSubmit,
@@ -56,7 +57,7 @@ export function RegisterDataCollections(props: RegisterDataCollectionsProps) {
       <FlashList
         data={collections}
         refreshing={isLoadingAll}
-        renderItem={({ item }) => (
+        renderItem={({ item, index }) => (
           <FormRender
             fields={item}
             onUpdate={handleUpdate}
