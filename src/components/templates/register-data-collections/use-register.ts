@@ -1,11 +1,7 @@
 import { FieldErrors, useFieldArray, useForm } from "react-hook-form";
 import uuid from "react-native-uuid";
 
-import {
-  dataCollectionSchema,
-  DataCollectionSchemaType,
-  DataUpdate,
-} from "./schema";
+import { dataCollectionSchema, DataCollectionSchemaType } from "./schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback, useEffect, useState } from "react";
 import { RegisterDataCollectionsProps } from "./types";
@@ -151,12 +147,12 @@ export function useRegister(props: RegisterDataCollectionsProps) {
 
     if (props.type === FIELD_TYPE_ENUM.radio) {
       // Única escolha
-      return {};
+      return null;
     }
 
     if (props.type === FIELD_TYPE_ENUM.select) {
       // Única escolha
-      return {};
+      return null;
     }
 
     return "";
@@ -168,6 +164,7 @@ export function useRegister(props: RegisterDataCollectionsProps) {
       return JSON.parse(str);
     };
 
+    const collections = form.getValues("collections");
     const dataCollections = data.map((item) => {
       return {
         fields: {
@@ -178,9 +175,12 @@ export function useRegister(props: RegisterDataCollectionsProps) {
           dataWhere: parseJSON(item.dataWhere),
           extraField: parseJSON(item.extraField),
         },
-        value: startData(item),
+        value:
+          collections.find((c) => c.fields.identifier === item.identifier)
+            ?.value ?? startData(item),
       };
     });
+
     form.setValue("collections", dataCollections);
   }, [form, data]);
 

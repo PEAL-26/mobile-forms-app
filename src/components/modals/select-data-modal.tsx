@@ -1,44 +1,101 @@
 import {
-  FlatList,
   Pressable,
+  RefreshControl,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { Modal } from "react-native";
-import { Input } from "../ui/input";
 import { memo, useEffect, useState } from "react";
 import { ActivityIndicator } from "react-native";
+
+import { generateData } from "@/services/data";
+import { useDebounce } from "@uidotdev/usehooks";
+import { useQueryPagination } from "@/hooks/use-query-pagination";
+
+import { Input } from "../ui/input";
+import { FlashList, setFlashListLoader } from "../ui/flash-list";
 
 type ItemType = {
   id: string;
   title: string;
 };
 
+export type SelectInfoType = {
+  identifierField: string;
+  data: any | null;
+  dataWhere?: any | null;
+  child_field?: {
+    identifier?: string;
+    clear: boolean;
+  };
+};
+
+type SelectedData = {
+  identifierField: string;
+  item: ItemType;
+  child_field?: {
+    identifier?: string;
+    clear: boolean;
+  };
+};
+
 interface SelectDataModalProps {
-  data?: ItemType[];
-  onSelect?(data: ItemType | null): void;
+  info?: SelectInfoType;
+  onSelect?(data: SelectedData): void;
   open?: boolean;
   onClose?(state: false): void;
-  info?: any;
 }
 
 export const SelectDataModal = memo((props: SelectDataModalProps) => {
-  const { open, onClose, data = [], onSelect } = props;
-  const [isLoading, setIsLoading] = useState(true);
+  const { open, onClose, info, onSelect } = props;
+  const { identifierField, data, dataWhere, child_field } = info || {};
+
+  const [loadingToOpen, setLoadingToOpen] = useState(true);
 
   const handleClose = () => {
     onClose?.(false);
   };
 
   const handleSelect = (item: ItemType) => {
-    onSelect?.(item);
+    if (!identifierField) return;
+
+    onSelect?.({
+      identifierField,
+      item,
+      child_field: {
+        identifier: child_field?.identifier,
+        clear: true,
+      },
+    });
+
     handleClose();
   };
 
+  const [query, setQuery] = useState("");
+  const debouncedQuery = useDebounce(query, 300);
+
+  const table = useQueryPagination({
+    fn: ({ page }) =>
+      generateData(data, { page, query: debouncedQuery, dataWhere }),
+    queryKey: [
+      "data",
+      "data_tables",
+      identifierField,
+      debouncedQuery,
+      { ...dataWhere },
+    ],
+  });
+
   useEffect(() => {
-    setIsLoading(false);
-  }, []);
+    let timeout = undefined;
+    if (open) {
+      timeout = setTimeout(() => {
+        setLoadingToOpen(false);
+      }, 700);
+    }
+    return () => clearTimeout(timeout);
+  }, [open]);
 
   return (
     <Modal
@@ -52,30 +109,70 @@ export const SelectDataModal = memo((props: SelectDataModalProps) => {
         onPress={handleClose}
         className="flex-1 justify-center items-center bg-black/50 p-10"
       >
-        <View className="relative rounded-md bg-white shadow overflow-hidden w-full h-80">
-          {data.length === 0 && (
-            <View className="flex-1 justify-center items-center">
-              <Text>Sem nenhum item</Text>
+        <View className="relative rounded-md bg-white shadow overflow-hidden w-full h-96">
+          {loadingToOpen && (
+            <View className="flex-1 justify-center items-center ">
+              <ActivityIndicator animating color="#000" />
             </View>
           )}
-          {isLoading && (
-            <View className="flex-1 flex-row justify-center items-center">
-              <ActivityIndicator color="#000" size="small" />
-            </View>
-          )}
-
-          {!isLoading && data.length > 0 && (
+          {!loadingToOpen && (
             <>
-              <View className="absolute top-0 left-0 right-0 z-20 px-3 pt-3 bg-white">
-                <Input placeholder="Pesquisar..." className="" />
+              <View className="px-3 py-3 flex-row items-start gap-2">
+                <Input
+                  placeholder="Pesquisar..."
+                  onChangeText={setQuery}
+                  className="flex-1"
+                />
               </View>
-              <FlatList
-                ListHeaderComponent={() => <View className="h-14" />}
-                data={data}
-                renderItem={({ item }) =>
-                  renderItem({ item, onPress: handleSelect })
+
+              <FlashList
+                data={debouncedQuery && table?.isFetching ? [] : table.data}
+                refreshing={table?.isLoading}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    className="px-3"
+                    activeOpacity={0.6}
+                    onPress={() => handleSelect(item)}
+                  >
+                    <View className="rounded py-1 px-3 bg-white border-b border-gray-300 h-10">
+                      <Text className="line-clamp-2 flex-1">{item?.title}</Text>
+                    </View>
+                  </TouchableOpacity>
+                )}
+                keyExtractor={(item: any) => item.id}
+                refreshControl={
+                  <RefreshControl
+                    refreshing={table?.isLoading}
+                    onRefresh={table?.refetch}
+                    colors={["#000", "#FFF"]}
+                  />
                 }
-                contentContainerStyle={{ paddingLeft: 12, paddingRight: 12 }}
+                ListFooterComponent={setFlashListLoader(
+                  table?.isFetching,
+                  table?.isError,
+                  table?.refetch
+                )}
+                ListEmptyComponent={
+                  table?.isEmpty ? (
+                    <View
+                      style={{
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text className="text-sm text-center max-w-[250px]">
+                        {debouncedQuery
+                          ? "Nenhum item encontrado"
+                          : "Sem items cadastrado"}
+                      </Text>
+                    </View>
+                  ) : null
+                }
+                ListFooterComponentStyle={{ paddingVertical: 16 }}
+                estimatedItemSize={40}
+                onEndReachedThreshold={0.5}
+                showsVerticalScrollIndicator={false}
+                onEndReached={table.loadNextPageData}
               />
             </>
           )}
@@ -86,20 +183,3 @@ export const SelectDataModal = memo((props: SelectDataModalProps) => {
 });
 
 SelectDataModal.displayName = "SelectDataModal";
-
-type RenderItemProps<T extends ItemType> = {
-  item: T;
-  onPress?(item: T): void;
-};
-
-function renderItem<T extends ItemType>(props: RenderItemProps<T>) {
-  const { item, onPress } = props;
-  return (
-    <TouchableOpacity
-      className="h-8 bg-white border-b border-gray-300 mb-2 flex-row items-center"
-      onPress={() => onPress?.(item)}
-    >
-      <Text>{item.title}</Text>
-    </TouchableOpacity>
-  );
-}

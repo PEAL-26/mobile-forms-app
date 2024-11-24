@@ -10,15 +10,15 @@ import {
   ActivityIndicator,
 } from "react-native";
 
+import { useQueryClient } from "@tanstack/react-query";
+import { createSectionService } from "@/services/sections";
 import { listSectionService } from "@/services/sections/list";
 
 import { Text } from "../ui/text";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { FlashList, setFlashListLoader } from "../ui/flash-list";
 import { Textarea } from "../ui/textarea";
-import { createSectionService } from "@/services/sections";
-import { useQueryClient } from "@tanstack/react-query";
+import { FlashList, setFlashListLoader } from "../ui/flash-list";
 
 type SectionType = {
   id: number;

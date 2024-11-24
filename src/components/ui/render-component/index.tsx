@@ -42,13 +42,11 @@ export function RenderComponent(props: Props) {
         type={fields.type}
         extras={fields?.extraField || undefined}
         identifier={fields.identifier}
-        // data={data}
         defaultData={defaultData}
         onChange={onChange}
         defaultDataExtras={defaultDataExtras}
         onChangeExtras={onChangeExtras}
         onOpenOutside={onOpenOutside}
-        // isLoading={isLoading}
       />
     </View>
   );

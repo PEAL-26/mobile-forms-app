@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { ChevronsUpDown } from "lucide-react-native";
 import { cn } from "@/lib/utils";
 
@@ -39,8 +39,6 @@ export function Select<T extends ItemType>(props: Props<T>) {
   const defaultItem = useMemo(() => props?.defaultItem, [props?.defaultItem]);
   const [currentItem, setCurrentItem] = useState<T | undefined>();
   const [openModal, setOpenModal] = useState(false);
-
-  console.log(defaultItem)
 
   const handleSelect = (data: T | null) => {
     setCurrentItem(data || undefined);
@@ -92,14 +90,14 @@ export function Select<T extends ItemType>(props: Props<T>) {
         </>
       </Button>
 
-      {!openOutside && (
+      {/* {!openOutside && (
         <SelectDataModal
           data={items}
           onSelect={handleSelect}
           open={openModal}
           onClose={setOpenModal}
         />
-      )}
+      )} */}
     </>
   );
 }

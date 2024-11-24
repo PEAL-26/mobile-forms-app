@@ -1,4 +1,4 @@
-import { memo, useCallback } from "react";
+import { memo, useCallback, useMemo } from "react";
 import { View } from "react-native";
 import debounce from "lodash.debounce";
 import { Text } from "@/components/ui/text";
@@ -32,8 +32,9 @@ interface FormRenderProps {
 
 var lastSection = "";
 var showSection = false;
-const FormRender = memo((props: FormRenderProps) => {
-  const { fields, onUpdate, onOpenOutside } = props;
+
+export const FormRender = memo((props: FormRenderProps) => {
+  const { fields, value, onUpdate, onOpenOutside } = props;
 
   if (!fields?.section?.name) {
     showSection = false;
@@ -54,8 +55,8 @@ const FormRender = memo((props: FormRenderProps) => {
     [onUpdate]
   );
 
-  // TODO Fazer todo o processamento de dados aqui nessa parte
-
+  const defaultValue = useMemo(() => value, [value]);
+  
   return (
     <View className="px-3 mt-4">
       {showSection && (
@@ -69,7 +70,7 @@ const FormRender = memo((props: FormRenderProps) => {
       )}
       <RenderComponent
         fields={fields}
-        // defaultData={value}
+        defaultData={defaultValue}
         onChange={(value) => {
           debouncedOnUpdate(fields.identifier, value);
         }}
@@ -81,5 +82,3 @@ const FormRender = memo((props: FormRenderProps) => {
 });
 
 FormRender.displayName = "FormRender";
-
-export { FormRender };

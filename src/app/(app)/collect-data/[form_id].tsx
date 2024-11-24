@@ -20,8 +20,6 @@ export default function CollectDataScreen() {
   const [openFormModal, setOpenFormModal] = useState(false);
   const [isLoadingPage, setIsLoadingPage] = useState(false);
 
-  console.log(params.form_id);
-
   const { data: form = null, isLoading } = useQuery({
     queryFn: () => {
       return formId ? getFormByIdService(formId) : null;

@@ -4,27 +4,33 @@ import { ActivityIndicator, useWindowDimensions, View } from "react-native";
 import { cn } from "@/lib/utils";
 import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
-import { FlashList, setFlashListLoader } from "@/components/ui/flash-list";
+import { Loading } from "@/components/ui/loading";
 import { AddModal } from "@/components/modals/add-modal";
+import {
+  SelectDataModal,
+  SelectInfoType,
+} from "@/components/modals/select-data-modal";
+import { FlashList, setFlashListLoader } from "@/components/ui/flash-list";
 
 import { FormRender } from "./form-render";
 import { useRegister } from "./use-register";
 import { RegisterDataCollectionsProps } from "./types";
-import { Loading } from "@/components/ui/loading";
-import { SelectDataModal } from "@/components/modals/select-data-modal";
 import { DataCollectionFieldSchemaType } from "./schema";
 
 export function RegisterDataCollections(props: RegisterDataCollectionsProps) {
   const { isLoadingForm } = props;
 
   const window = useWindowDimensions();
+
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openSelectModal, setOpenSelectModal] = useState(false);
-  const [selectInfoModal, setSelectInfoModal] = useState("");
+  const [selectInfo, setSelectInfo] = useState<SelectInfoType | undefined>(
+    undefined
+  );
 
   const {
-    form,
     collections,
+    form,
     isLoadingPage,
     handleSubmit,
     handleUpdate,
@@ -47,19 +53,54 @@ export function RegisterDataCollections(props: RegisterDataCollectionsProps) {
   }
 
   const handleOpenSelectModal = (item: DataCollectionFieldSchemaType) => {
-    console.log(item);
     setOpenSelectModal(true);
-    setSelectInfoModal("");
+    const collections = form.getValues("collections");
+
+    let dataWhere = item.dataWhere
+      ? JSON.parse(JSON.stringify(item.dataWhere))
+      : null;
+    if (dataWhere) {
+      const parentField = collections.find(
+        (c) => c.fields.identifier === dataWhere.parent_identifier
+      );
+
+      if (parentField) {
+        dataWhere.value = parentField.value[dataWhere.parent_field];
+      }
+    }
+
+    const child = collections.find((col) => {
+      if (col.fields.dataWhere) {
+        return col.fields?.dataWhere?.parent_identifier === item.identifier;
+      }
+      return false;
+    });
+
+    setSelectInfo({
+      identifierField: item.identifier,
+      data: item.data,
+      dataWhere,
+      child_field: {
+        identifier: child?.fields?.identifier,
+        clear: false,
+      },
+    });
   };
+
+  const collectionsWatch = form.watch("collections");
 
   return (
     <>
       <FlashList
-        data={collections}
+        data={collectionsWatch.map(({ fields, value }) => ({
+          ...fields,
+          value,
+        }))}
         refreshing={isLoadingAll}
-        renderItem={({ item, index }) => (
+        renderItem={({ item }) => (
           <FormRender
             fields={item}
+            value={item.value}
             onUpdate={handleUpdate}
             onOpenOutside={() => {
               handleOpenSelectModal(item);
@@ -115,11 +156,25 @@ export function RegisterDataCollections(props: RegisterDataCollectionsProps) {
       <Loading show={isSaving} />
 
       <AddModal open={openAddModal} onClose={setOpenAddModal} />
-      <SelectDataModal
-        info={selectInfoModal}
-        open={openSelectModal}
-        onClose={setOpenSelectModal}
-      />
+      {openSelectModal && (
+        <SelectDataModal
+          info={selectInfo}
+          open={openSelectModal}
+          onClose={setOpenSelectModal}
+          onSelect={({ identifierField, item, child_field }) => {
+            if (child_field?.clear) {
+              const collections = form.getValues("collections");
+              const fieldIndex = collections.findIndex(
+                (c) => c.fields.identifier === child_field.identifier
+              );
+
+              form.setValue(`collections.${fieldIndex}.value`, null);
+            }
+
+            handleUpdate(identifierField, item);
+          }}
+        />
+      )}
     </>
   );
 }

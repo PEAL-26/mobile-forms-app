@@ -65,10 +65,7 @@ export const formField = sqliteTable("forms_fields", {
   identifier: text("identifier").notNull(),
 
   data: text("data", { mode: "json" }),
-  // array: [Item1;; Item2] || table: TableName
-
-  // dataFields: text("data_fields"),
-  // {identifier:string, title:string}
+// {type: 'list'|'data_table', src: ''}
 
   dataWhere: text("data_where", { mode: "json" }),
   // {field:string, value:string, from_another_selection: string}

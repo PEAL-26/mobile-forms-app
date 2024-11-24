@@ -157,11 +157,11 @@ export function fieldsMap(fields: string[], tables: string[]) {
   return newFields.join(", ");
 }
 
-function setNestedValue(
+export function setNestedValue(
   obj: Record<string, any>,
   path: string,
   value: any
-): void {
+) {
   const keys = path.split(".");
   let current = obj;
 
@@ -176,6 +176,8 @@ function setNestedValue(
 
     current = current[key];
   });
+
+  return obj;
 }
 
 export function generateOrderByClause(
@@ -268,7 +270,7 @@ export function generateCreateTableScript(
 
 export function generateFn(fn?: Record<string, string>) {
   if (!fn) return "";
-  
+
   let generate = [];
   for (const [field, value] of Object.entries(fn)) {
     generate.push(`${value} AS ${field}`);

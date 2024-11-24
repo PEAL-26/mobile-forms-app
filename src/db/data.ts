@@ -58,7 +58,7 @@ export const fieldsSeed = [
     identifier: "1",
     display: "Selecione a província",
     type: "select",
-    data: '{"type":"data_table","src":"provinces (id as id, name as title)"}',
+    data: '{"type":"data_table","src":"provinces; id as id; name as title"}',
   },
   {
     id: 2,
@@ -67,8 +67,8 @@ export const fieldsSeed = [
     identifier: "2",
     display: "Selecione o município",
     type: "select",
-    data: '{"type":"data_table","src":"cities (id as id, name as title)"}',
-    dataWhere: '{"field":"id", "from_another_selection": "1"}',
+    data: '{"type":"data_table","src":"cities; id as id name as title"}',
+    dataWhere: '{"parent_field":"id", "child_field": "province_id", "parent_identifier": "1"}',
   },
   {
     id: 3,

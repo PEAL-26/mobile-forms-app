@@ -1,5 +1,5 @@
 export type Field<T> = Record<keyof T, SelectField>;
-export type SelectField = boolean | { as?: string };
+export type SelectField = boolean | { as?: string; to_replace?: boolean };
 export type DatabaseConfigSelect = {
   [key: string]: SelectField;
 };
