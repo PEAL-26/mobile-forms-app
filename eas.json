@@ -13,6 +13,9 @@
       "android": {
         "buildType": "apk",
         "image": "latest"
+      },
+      "env": {
+        "EAS_BUILD_DISABLE_MAVEN_CACHE": "1"
       }
     },
     "production": {
