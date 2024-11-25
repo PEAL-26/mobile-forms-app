@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { Modal, Text, View } from "react-native";
+import { Modal, PermissionsAndroid, Text, View } from "react-native";
 import * as FileSystem from "expo-file-system";
 import { XIcon } from "lucide-react-native";
 import * as Linking from "expo-linking";
 import { File, Paths } from "expo-file-system/next";
 
 import { exportToExcel } from "@/helpers/xlsx";
-import { ensureDirExists, moveTo, writeFile } from "@/helpers/file";
+import { ensureDirExists,  moveTo, writeFile } from "@/helpers/file";
 import { Button } from "../ui/button";
+import { db } from "@/db";
 
 interface Props {
   open?: boolean;
@@ -29,10 +30,31 @@ export function ExportDataModal(props: Props) {
     // if (start) return;
     // setStart(true);
 
+    let isPermittedExternalStorage = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
+    );
+
+    if (!isPermittedExternalStorage) {
+      // Ask for permission
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
+      );
+
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        // Permission Granted (calling our exportDataToExcel function)
+        // exportDataToExcel();
+        console.log("Permission granted");
+      } else {
+        // Permission denied
+        console.log("Permission denied");
+      }
+    }
+
     try {
-      const data = await exportToExcel([{ id: 1, name: "Alguma coisa" }]);
+      const response = await db.listAll("data_collection");
+      const data = await exportToExcel(response, "data_collection");
       const directoryPath = await ensureDirExists("mobile-forms-exports");
-      const fileName = `exported-${Date.now()}.txt`;
+      const fileName = `exported-${Date.now()}.xlsx`;
       const filePath = `${directoryPath}/${fileName}`;
       await writeFile(filePath, data, FileSystem.EncodingType.Base64);
 
@@ -46,7 +68,7 @@ export function ExportDataModal(props: Props) {
       //       //   const canOpen = await Linking.canOpenURL(filePath);
       //       //   console.log({canOpen})
       //       //   if (canOpen) {
-      await Linking.openURL(filePath);
+      // await Linking.openURL(filePath);
       //       //   }
 
       //         console.log("Ficheiro movido com sucesso.");

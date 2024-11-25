@@ -11,14 +11,14 @@ import {
 import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
 import { getFormByIdService } from "@/services/forms";
-import { LoadingPage } from "@/components/ui/loading";
+import { Loading, LoadingPage } from "@/components/ui/loading";
 import { SeparatorWithLabel } from "@/components/ui/separator";
-import { NotFoundPage } from "@/components/ui/page-errors";
 import { FlashList, setFlashListLoader } from "@/components/ui/flash-list";
 import { listDataCollectionsGroupByFormId } from "@/services/data-collections";
 import { useQueryPagination } from "@/hooks/use-query-pagination";
 import { useWindowDimensions } from "react-native";
 import { useEffect, useState } from "react";
+import { useRemove } from "@/hooks/use-remove";
 
 export default function FormDetailsScreen() {
   const params = useGlobalSearchParams<{ form_id: string }>();
@@ -30,7 +30,6 @@ export default function FormDetailsScreen() {
   const {
     data: form,
     isLoading,
-    isError,
     refetch,
   } = useQuery({
     queryFn: () => getFormByIdService(Number(params.form_id)),
@@ -43,6 +42,19 @@ export default function FormDetailsScreen() {
         ? listDataCollectionsGroupByFormId({ page, formId: form.id })
         : undefined,
     queryKey: ["data-collection-group-by-form", form?.id],
+  });
+
+  const remove = useRemove({
+    tableName: "data_collection",
+    queryKey: [
+      "forms_with_count_collections",
+      params.form_id,
+      "data-collection-group-by-form",
+    ],
+    refetch: () => {
+      refetch();
+      dataCollection.refetch();
+    },
   });
 
   useEffect(() => {
@@ -91,15 +103,35 @@ export default function FormDetailsScreen() {
               router.push(`/forms/collect-data/${item.identifier}`)
             }
           >
-            <View className="bg-white p-3 rounded mt-3 flex-row items-center justify-between gap-3">
-              <View>
+            <View className="bg-white rounded mt-3 flex-row items-center justify-between gap-3 overflow-hidden">
+              <View className=" p-3">
                 <Text className="font-bold line-clamp-1">
                   {new Date(item.updatedAt).toLocaleString()}
                 </Text>
               </View>
-              <View className="flex-row items-center gap-3">
-                <Button icon={() => <Edit2Icon size={20} color="#000" />} />
-                <Button icon={() => <TrashIcon size={20} color="red" />} />
+              <View className="flex-row items-center justify-end gap-2 h-full w-20">
+                {/* <Button
+                  icon={() => (
+                    <Edit2Icon
+                      size={20}
+                      color="#000"
+                      // onPress={() => router.push(`/(app)/collect-data/${}`)}
+                    />
+                  )}
+                  containerClassName="flex-1 w-full h-full  justify-center items-center"
+                /> */}
+                <Button
+                  containerClassName="w-full h-full flex-1 justify-center items-center"
+                  icon={() => (
+                    <TrashIcon
+                      size={20}
+                      color="red"
+                      onPress={() =>
+                        remove.handleRemove({ identifier: item.identifier })
+                      }
+                    />
+                  )}
+                />
               </View>
             </View>
           </Button>
@@ -142,6 +174,8 @@ export default function FormDetailsScreen() {
         showsVerticalScrollIndicator={false}
         onEndReached={dataCollection.loadNextPageData}
       />
+
+      <Loading show={remove.isLoading} />
     </View>
   );
 }

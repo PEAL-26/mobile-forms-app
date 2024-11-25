@@ -34,7 +34,7 @@ export abstract class IDatabase {
     tableName: string,
     data: UpdateBulkData[]
   ): Promise<T[]>;
-  abstract delete<T>(id: string): Promise<T>;
+  abstract delete(tableName: string, where: Record<string, any>): Promise<void>;
   abstract select<T>(fields: Field<T>, tableName: string): Promise<T[]>;
   abstract getFirst<T>(
     tableName: string,

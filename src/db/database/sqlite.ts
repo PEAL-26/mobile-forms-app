@@ -10,10 +10,7 @@ import {
 import {
   fieldsMap,
   generateCreateFields,
-  generateFn,
-  generateGroupBy,
   generateIncludes,
-  generateOrderByClause,
   generateQueryFields,
   generateQuerySql,
   generateWhereClause,
@@ -70,8 +67,9 @@ export class DatabaseSQLite implements IDatabase {
     throw new Error("Method not implemented.");
   }
 
-  delete<T>(id: string): Promise<T> {
-    throw new Error("Method not implemented.");
+  async delete(tableName: string, where: Record<string, any>): Promise<void> {
+    const whereClause = generateWhereClause(where);
+    await this.connection.execAsync(`DELETE FROM ${tableName} ${whereClause}`);
   }
 
   async getFirst<T>(

@@ -30,7 +30,6 @@
         {
           "android": {
             "backgroundColor": "#FFF",
-            "resizeMode": "cover",
             "image": "./assets/images/splash.png"
           }
         }

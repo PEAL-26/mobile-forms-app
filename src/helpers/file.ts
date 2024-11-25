@@ -31,6 +31,7 @@ export async function writeFile(
   content: string,
   encoding?: FileSystem.EncodingType
 ) {
+  // FileSystem.
   await FileSystem.writeAsStringAsync(filePath, content, {
     encoding,
   });
