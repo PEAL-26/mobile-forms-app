@@ -11,6 +11,7 @@ import { ErrorPage, NotFoundPage } from "@/components/ui/page-errors";
 import { listDataCollectionsByIdentifier } from "@/services/data-collections";
 import { Label } from "@/components/ui/label";
 import { SeparatorWithLabel } from "@/components/ui/separator";
+import { FIELD_TYPE_ENUM } from "@/db";
 
 export default function DataCollectDetailsScreen() {
   const params = useGlobalSearchParams<{ identifier: string }>();
@@ -67,6 +68,24 @@ export default function DataCollectDetailsScreen() {
               }
             }
 
+            let value = item.value;
+
+            if (item.type === FIELD_TYPE_ENUM.boolean) {
+              value = item.value ? "Sim" : "Não";
+            }
+
+            if (item.type === FIELD_TYPE_ENUM.checkbox) {
+              value = `${item.value}`;
+            }
+
+            if (item.type === FIELD_TYPE_ENUM.radio) {
+              value = `${item.value}`;
+            }
+
+            if (item.type === FIELD_TYPE_ENUM.select) {
+              value = JSON.parse(JSON.stringify(item.value))?.title ?? "S/N";
+            }
+
             return (
               <>
                 {showSection && (
@@ -84,7 +103,7 @@ export default function DataCollectDetailsScreen() {
                 )}
                 <View style={{ paddingHorizontal: 12, paddingBottom: 12 }}>
                   <Label>{item.field.display}</Label>
-                  <Text>{item.value}</Text>
+                  <Text>{value ?? "S/N"}</Text>
                 </View>
               </>
             );

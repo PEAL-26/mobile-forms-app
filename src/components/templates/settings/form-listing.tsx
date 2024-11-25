@@ -16,6 +16,8 @@ import { Button } from "@/components/ui/button";
 import { useQueryPagination } from "@/hooks/use-query-pagination";
 import { FlashList, setFlashListLoader } from "@/components/ui/flash-list";
 import { SettingsFormDetailsModal } from "@/components/modals/settings-form-details-modal";
+import { useRemove } from "@/hooks/use-remove";
+import { Loading } from "@/components/ui/loading";
 
 export function SettingFormListing() {
   const router = useRouter();
@@ -40,6 +42,12 @@ export function SettingFormListing() {
     queryKey: ["settings_forms", debouncedQuery],
   });
 
+  const remove = useRemove({
+    tableName: "forms",
+    queryKey: ["settings_forms", debouncedQuery],
+    refetch,
+  });
+
   return (
     <>
       {/* Body */}
@@ -62,22 +70,40 @@ export function SettingFormListing() {
         renderItem={({ item }) => (
           <TouchableOpacity
             className="px-3"
+            style={{ marginBottom: 8 }}
             activeOpacity={0.6}
             onPress={() => {
               setOpenDetails(true);
               setFormId(item.id);
             }}
           >
-            <View className="rounded py-1 px-3 bg-white border-b border-gray-300 flex-row items-center justify-between gap-3">
-              <Text className="line-clamp-2 flex-1">{item.name}</Text>
-              <View className="flex-row items-center gap-3">
+            <View className="rounded  bg-white shadow-black flex-row items-center justify-between gap-3">
+              <View className="py-3 pl-3 flex-1">
+                <Text className="line-clamp-1 flex-1">{item.name}</Text>
+              </View>
+              <View className="flex-row items-center justify-end gap-2 h-full w-20">
                 <Button
-                  icon={() => <Edit2Icon size={20} color="#000" />}
-                  onPress={() =>
-                    router.push(`/settings/register-form/${item.id}`)
-                  }
+                  icon={() => (
+                    <Edit2Icon
+                      size={20}
+                      color="#000"
+                      onPress={() =>
+                        router.push(`/settings/register-form/${item.id}`)
+                      }
+                    />
+                  )}
+                  containerClassName="flex-1 w-full h-full  justify-center items-center"
                 />
-                <Button icon={() => <TrashIcon size={20} color="red" />} />
+                <Button
+                  containerClassName="w-full h-full flex-1 justify-center items-center"
+                  icon={() => (
+                    <TrashIcon
+                      size={20}
+                      color="red"
+                      onPress={() => remove.handleRemove({ id: item.id })}
+                    />
+                  )}
+                />
               </View>
             </View>
           </TouchableOpacity>
@@ -125,6 +151,8 @@ export function SettingFormListing() {
           setFormId(undefined);
         }}
       />
+
+      <Loading show={remove.isLoading} />
     </>
   );
 }
