@@ -5,6 +5,7 @@ import {
   DatabaseInclude,
   DatabaseWhere,
   DatabaseWhereField,
+  ListPaginateConfigs,
 } from "./types";
 
 export function generateQueryFields(select?: DatabaseConfigSelect) {
@@ -282,4 +283,30 @@ export function generateFn(fn?: Record<string, string>) {
 export function generateGroupBy(group?: string[]) {
   if (!group || !group.length) return "";
   return `GROUP BY ${group.join(", ")}`;
+}
+
+export function generateQuerySql(
+  tableName: string,
+  configs?: ListPaginateConfigs
+) {
+  const { select, where, include, orderBy, groupBy, fn } = configs || {};
+  const fields = generateQueryFields(select);
+  const includes = generateIncludes(tableName, include);
+
+  const whereClause = generateWhereClause(where);
+  const includesFields =
+    includes.fields.length > 0
+      ? `, ${fieldsMap(includes.fields, includes.tables)}`
+      : "";
+  const fns = generateFn(fn);
+  const orderByClause = generateOrderByClause(orderBy);
+  const groups = generateGroupBy(groupBy);
+
+  const baseQuery = `SELECT ${fieldsMap(fields, [tableName])}${includesFields}${
+    fns ? `, ${fns}` : ""
+  } FROM ${tableName} ${
+    includes.joins
+  } ${whereClause} ${groups} ${orderByClause}`;
+
+  return { baseQuery, includes };
 }

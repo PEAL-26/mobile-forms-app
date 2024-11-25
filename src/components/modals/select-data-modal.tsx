@@ -9,7 +9,7 @@ import { Modal } from "react-native";
 import { memo, useEffect, useState } from "react";
 import { ActivityIndicator } from "react-native";
 
-import { generateData } from "@/services/data";
+import { generateDataPaginate } from "@/services/data";
 import { useDebounce } from "@uidotdev/usehooks";
 import { useQueryPagination } from "@/hooks/use-query-pagination";
 
@@ -31,7 +31,7 @@ export type SelectInfoType = {
   };
 };
 
-type SelectedData = {
+export type SelectedData = {
   identifierField: string;
   item: ItemType;
   child_field?: {
@@ -77,7 +77,7 @@ export const SelectDataModal = memo((props: SelectDataModalProps) => {
 
   const table = useQueryPagination({
     fn: ({ page }) =>
-      generateData(data, { page, query: debouncedQuery, dataWhere }),
+      generateDataPaginate(data, { page, query: debouncedQuery, dataWhere }),
     queryKey: [
       "data",
       "data_tables",

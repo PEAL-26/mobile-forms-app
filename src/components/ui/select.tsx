@@ -90,14 +90,14 @@ export function Select<T extends ItemType>(props: Props<T>) {
         </>
       </Button>
 
-      {/* {!openOutside && (
+      {!openOutside && (
         <SelectDataModal
-          data={items}
-          onSelect={handleSelect}
+          // data={items}
+          // onSelect={handleSelect}
           open={openModal}
           onClose={setOpenModal}
         />
-      )} */}
+      )}
     </>
   );
 }

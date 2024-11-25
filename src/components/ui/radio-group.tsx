@@ -47,7 +47,7 @@ function RadioGroupItemWithLabel({
 }: Readonly<{
   value: string;
   label: string;
-  onLabelPress: () => void;
+  onLabelPress?(): void;
 }>) {
   return (
     <View className={"flex-row gap-2 items-center"}>

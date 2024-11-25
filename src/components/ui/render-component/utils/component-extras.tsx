@@ -1,13 +1,13 @@
 import { View } from "react-native";
 
-import { FieldType } from "@/db";
+import { ExtraFieldTriggerType, ExtraFieldType, FieldType } from "@/db";
 import { Label } from "../../label";
 import { getComponentByType } from "./parts/utils";
 import { parseJSON } from "@/helpers/json";
 
 interface ComponentExtraProps {
   parentIdentifier?: string;
-  extras?: string;
+  extras?: ExtraFieldType;
   type: string;
   value?: any;
   defaultData?: any;
@@ -18,9 +18,9 @@ export function ComponentExtra(props: ComponentExtraProps) {
   const { parentIdentifier, extras, type, value, onChange, defaultData } =
     props;
 
-  const fields = parseJSON<Extras>(extras);
+  // const fields = parseJSON<Extras>(extras);
   const triggerValue = getValueByType(type, value);
-  const showComponent = checkTrigger(triggerValue, fields?.trigger);
+  const showComponent = checkTrigger(triggerValue, extras?.trigger);
 
   // useEffect(() => {
   //   if (!showComponent) {
@@ -28,8 +28,8 @@ export function ComponentExtra(props: ComponentExtraProps) {
   //   }
   // }, [showComponent, onChange]);
 
-  if (!fields) return null;
-  if (!extras || !value) return null;
+  if (!extras) return null;
+  if (!value) return null;
   if (!showComponent) return null;
 
   const parentValue = {
@@ -38,7 +38,7 @@ export function ComponentExtra(props: ComponentExtraProps) {
   }[type];
 
   const component = getComponentByType({
-    type: fields.type,
+    type: extras.type,
     defaultData,
     onChange: (valueExtra: any) => {
       const parent = {
@@ -46,26 +46,22 @@ export function ComponentExtra(props: ComponentExtraProps) {
         ...parentValue,
       };
 
-      onChange?.({ value: valueExtra, display: fields?.display, parent });
+      onChange?.({ value: valueExtra, display: extras?.display, parent });
     },
   });
 
   return (
     <View className="flex-col gap-2">
-      <Label>{fields.display}</Label>
+      <Label>{extras.display}</Label>
       {component}
     </View>
   );
 }
 
-type Trigger = "true" | "false" | "any";
-type Extras = {
-  display: "Quantidade";
-  trigger: Trigger;
-  type: FieldType;
-};
-
-export function checkTrigger(value: string | undefined, trigger?: Trigger) {
+export function checkTrigger(
+  value: string | undefined,
+  trigger?: ExtraFieldTriggerType
+) {
   if (!value || !trigger) return false;
   const newValue = String(value).trim();
 

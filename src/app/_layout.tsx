@@ -78,24 +78,10 @@ export default function RootLayout() {
                 initialRouteName="(app)/index"
                 screenOptions={{
                   headerShown: false,
-                  animation: 'flip',
-                  animationDuration: 300
+                  animation: "flip",
+                  animationDuration: 300,
                 }}
-              >
-                {/* <Stack.Screen
-                  name="(app)/index"
-                  options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                  name="(app)/register"
-                  options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                  name="(app)/configuracoes"
-                  options={{ headerShown: false }}
-                /> */}
-
-              </Stack>
+              />
             </QueryClientProvider>
             <StatusBar style="dark" translucent animated />
           </AutocompleteDropdownContextProvider>

@@ -23,10 +23,10 @@ export function RegisterDataCollections(props: RegisterDataCollectionsProps) {
   const window = useWindowDimensions();
 
   const [openAddModal, setOpenAddModal] = useState(false);
-  const [openSelectModal, setOpenSelectModal] = useState(false);
-  const [selectInfo, setSelectInfo] = useState<SelectInfoType | undefined>(
-    undefined
-  );
+  // const [openSelectModal, setOpenSelectModal] = useState(false);
+  // const [selectInfo, setSelectInfo] = useState<SelectInfoType | undefined>(
+  //   undefined
+  // );
 
   const {
     collections,
@@ -52,59 +52,61 @@ export function RegisterDataCollections(props: RegisterDataCollectionsProps) {
     );
   }
 
-  const handleOpenSelectModal = (item: DataCollectionFieldSchemaType) => {
-    setOpenSelectModal(true);
-    const collections = form.getValues("collections");
+  // const handleOpenSelectModal = (item: DataCollectionFieldSchemaType) => {
+  //   setOpenSelectModal(true);
+  //   const collections = form.getValues("collections");
 
-    let dataWhere = item.dataWhere
-      ? JSON.parse(JSON.stringify(item.dataWhere))
-      : null;
-    if (dataWhere) {
-      const parentField = collections.find(
-        (c) => c.fields.identifier === dataWhere.parent_identifier
-      );
+  //   let dataWhere = item.dataWhere
+  //     ? JSON.parse(JSON.stringify(item.dataWhere))
+  //     : null;
+  //   if (dataWhere) {
+  //     const parentField = collections.find(
+  //       (c) => c.fields.identifier === dataWhere.parent_identifier
+  //     );
 
-      if (parentField) {
-        dataWhere.value = parentField.value[dataWhere.parent_field];
-      }
-    }
+  //     if (parentField) {
+  //       dataWhere.value = parentField.value[dataWhere.parent_field];
+  //     }
+  //   }
 
-    const child = collections.find((col) => {
-      if (col.fields.dataWhere) {
-        return col.fields?.dataWhere?.parent_identifier === item.identifier;
-      }
-      return false;
-    });
+  //   const child = collections.find((col) => {
+  //     if (col.fields.dataWhere) {
+  //       return col.fields?.dataWhere?.parent_identifier === item.identifier;
+  //     }
+  //     return false;
+  //   });
 
-    setSelectInfo({
-      identifierField: item.identifier,
-      data: item.data,
-      dataWhere,
-      child_field: {
-        identifier: child?.fields?.identifier,
-        clear: false,
-      },
-    });
-  };
+  //   setSelectInfo({
+  //     identifierField: item.identifier,
+  //     data: item.data,
+  //     dataWhere,
+  //     child_field: {
+  //       identifier: child?.fields?.identifier,
+  //       clear: false,
+  //     },
+  //   });
+  // };
 
   const collectionsWatch = form.watch("collections");
 
+  console.log(JSON.stringify(collections, null, 3));
   return (
     <>
       <FlashList
-        data={collectionsWatch.map(({ fields, value }) => ({
-          ...fields,
-          value,
-        }))}
+        data={collections}
         refreshing={isLoadingAll}
         renderItem={({ item }) => (
           <FormRender
             fields={item}
             value={item.value}
             onUpdate={handleUpdate}
-            onOpenOutside={() => {
-              handleOpenSelectModal(item);
+            // onOpenOutside={() => {
+            //   handleOpenSelectModal(item);
+            // }}
+            onClearSelect={(index) => {
+              form.setValue(`collections.${index}.value`, null);
             }}
+            collections={collectionsWatch}
           />
         )}
         keyExtractor={(item: any) => item.identifier}
@@ -156,7 +158,7 @@ export function RegisterDataCollections(props: RegisterDataCollectionsProps) {
       <Loading show={isSaving} />
 
       <AddModal open={openAddModal} onClose={setOpenAddModal} />
-      {openSelectModal && (
+      {/* {openSelectModal && (
         <SelectDataModal
           info={selectInfo}
           open={openSelectModal}
@@ -174,7 +176,7 @@ export function RegisterDataCollections(props: RegisterDataCollectionsProps) {
             handleUpdate(identifierField, item);
           }}
         />
-      )}
+      )} */}
     </>
   );
 }

@@ -1,7 +1,8 @@
 import { View } from "react-native";
-import { useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { CheckboxGroupItemWithLabel } from "../../checkbox";
 import { ComponentExtra } from "./component-extras";
+import { ExtraFieldType } from "@/db";
 
 type Item = { value: string; label: string; checked: boolean };
 
@@ -11,27 +12,28 @@ interface Props {
   defaultValue?: string[];
   onChange?: (data: Item[] | null) => void;
   type: string;
-  extras?: string;
+  extras?: ExtraFieldType;
   defaultDataExtras?: any;
   onChangeExtras?: (data: any) => void;
 }
 
-export function CheckboxGroupArray(props: Props) {
+export const CheckboxGroupArray = memo((props: Props) => {
   const {
     identifier,
     data,
-    defaultValue,
     onChange,
     type,
     extras,
+    defaultValue,
     defaultDataExtras,
     onChangeExtras,
   } = props;
 
+  const newData = useMemo(() => data, [data]);
   const [currentData, setCurrentData] = useState<Item[]>([]);
   const [currentDataExtra, setCurrentDataExtra] = useState<any[]>([]);
 
-  useEffect(() => {
+  const loadingData = useCallback(() => {
     const parents: Item[] = [];
     const extras: any[] = [];
     data.forEach((item) => {
@@ -43,6 +45,10 @@ export function CheckboxGroupArray(props: Props) {
     setCurrentData(parents);
     setCurrentDataExtra(extras);
   }, [data, identifier]);
+
+  useEffect(() => {
+    loadingData();
+  }, [data, identifier, loadingData]);
 
   const handleChange = (data: any) => {
     let extrasData: any[] = [];
@@ -97,13 +103,13 @@ export function CheckboxGroupArray(props: Props) {
 
   return (
     <View className="flex-col gap-2">
-      {data.map((item, key) => (
+      {newData.map((item, key) => (
         <CheckboxCustom
           key={`${item.value}-${key}`}
           identifier={identifier}
           value={item.value}
           label={item.label}
-          checked={!!defaultValue?.includes(item.value)}
+          // checked={!!defaultValue?.includes(item.value)}
           onChange={handleChange}
           type={type}
           extras={extras}
@@ -113,7 +119,9 @@ export function CheckboxGroupArray(props: Props) {
       ))}
     </View>
   );
-}
+});
+
+CheckboxGroupArray.displayName = "CheckboxGroupArray";
 
 interface CheckboxCustomPros {
   identifier?: string;
@@ -121,7 +129,7 @@ interface CheckboxCustomPros {
   value: string;
   checked?: boolean;
   type: string;
-  extras?: string;
+  extras?: ExtraFieldType;
   defaultDataExtras?: any;
   onChange?(data: any): void;
   onChangeExtras?(data: any): void;

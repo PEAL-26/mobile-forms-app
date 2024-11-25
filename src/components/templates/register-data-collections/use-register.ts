@@ -11,6 +11,7 @@ import { useQueryPagination } from "@/hooks/use-query-pagination";
 import { listFormsFields, ListFormsFieldsResponseData } from "@/services/forms";
 import { createDataCollectionsService } from "@/services/data-collections";
 import { useQueryClient } from "@tanstack/react-query";
+import { router } from "expo-router";
 
 export function useRegister(props: RegisterDataCollectionsProps) {
   const { form: collectionsForm, onLoadingPage: onLoading } = props;
@@ -65,6 +66,7 @@ export function useRegister(props: RegisterDataCollectionsProps) {
       queryClient.invalidateQueries({
         queryKey: ["data-collection-group-by-form", collectionsForm?.id],
       });
+      router.push(`/(app)/forms/collect-data/${identifier}`);
     } catch (error) {
       Alert.alert(
         "Oops! Falha ao guardar!",
@@ -113,6 +115,7 @@ export function useRegister(props: RegisterDataCollectionsProps) {
     const collection = collections[findIndex];
     if (!collection) return;
 
+    console.warn(value);
     form.clearErrors(`collections.${findIndex}.value`);
     update(findIndex, {
       ...collection,

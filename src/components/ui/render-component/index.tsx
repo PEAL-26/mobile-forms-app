@@ -1,53 +1,165 @@
-import { View } from "react-native";
+import { memo, ReactNode, useMemo } from "react";
+import { ActivityIndicator } from "react-native";
 
-import { FIELD_TYPE_ENUM } from "@/db";
-import { Label } from "@/components/ui/label";
+import {
+  ExtraFieldType,
+  FIELD_TYPE_ENUM,
+  FieldDataType,
+  FieldDataWhereType,
+} from "@/db";
 
-import { Component } from "./utils";
+import { Input } from "../input";
+import { Textarea } from "../textarea";
+import { CheckboxGroupArray } from "./utils/checkbox-array";
+import { RadioYesNo } from "./utils/radio-yes-no";
+import { RadioGroupArray } from "./utils/radio-array";
+import { SelectData } from "./utils/select-data";
+import { useRenderCount } from "@uidotdev/usehooks";
 
-export type Field = {
-  display: string;
-  type: FIELD_TYPE_ENUM;
-  identifier: string;
-  data?: string | null;
-  dataFields?: string | null;
-  dataWhere?: string | null;
-  extraField?: string | null;
-  description?: string | null;
+type DataType = {
+  value: string;
+  label: string;
 };
 
 interface Props {
-  fields: Field;
-  defaultData?: any;
-  defaultDataExtras?: any;
-  onChange?(id: any): void;
-  onChangeExtra?(id: any): void;
-  onOpenOutside?(): void;
+  data?: DataType[];
+  isLoading?: boolean;
+  type: FIELD_TYPE_ENUM;
+  extras?: ExtraFieldType;
+  selectData?: FieldDataType | null;
+  dataWhere?: FieldDataWhereType | null;
+  identifier: string;
+  defaultValue?: any;
+  // defaultValueExtraField?: any;
+  onChange?(value: any): void;
+  onChangeExtraField?(value: any): void;
+  // onOpenOutside?(): void;
+  onClearSelect?(index: number): void;
+  collections?: any;
 }
 
-export function RenderComponent(props: Props) {
+export const RenderComponent = memo((props: Props) => {
   const {
-    fields,
-    defaultData,
-    defaultDataExtras,
+    data = [],
+    isLoading,
+    type,
+    extras,
+    identifier,
+    defaultValue, // No default value já virá com os dados do campo extra
     onChange,
-    onChangeExtra: onChangeExtras,
-    onOpenOutside,
+    onChangeExtraField,
+    onClearSelect,
+    collections = [],
+    dataWhere,
+    selectData,
   } = props;
+  const render = useRenderCount();
+  console.log({ render });
 
-  return (
-    <View className="flex-col gap-2">
-      <Label className="text-base">{fields.display}</Label>
-      <Component
-        type={fields.type}
-        extras={fields?.extraField || undefined}
-        identifier={fields.identifier}
-        defaultData={defaultData}
-        onChange={onChange}
-        defaultDataExtras={defaultDataExtras}
-        onChangeExtras={onChangeExtras}
-        onOpenOutside={onOpenOutside}
-      />
-    </View>
-  );
-}
+  const component: ReactNode = useMemo(() => {
+    if (type === FIELD_TYPE_ENUM.number) {
+      return (
+        <Input
+          defaultValue={defaultValue}
+          placeholder="Número"
+          onChangeText={(text) => onChange?.(text ? Number(text) : undefined)}
+          keyboardType="number-pad"
+          returnKeyType="done"
+        />
+      );
+    }
+
+    if (type === FIELD_TYPE_ENUM.boolean) {
+      return (
+        <RadioYesNo
+          defaultData={String(defaultValue)}
+          onChange={onChange}
+          identifier={identifier}
+          type={type}
+          extras={extras}
+          defaultDataExtras={defaultValue?.extras}
+          onChangeExtras={onChangeExtraField}
+        />
+      );
+    }
+
+    if (type === FIELD_TYPE_ENUM.radio) {
+      return (
+        <RadioGroupArray
+          data={data}
+          defaultValue={defaultValue}
+          onChange={onChange}
+        />
+      );
+    }
+
+    if (type === FIELD_TYPE_ENUM.checkbox) {
+      return (
+        <CheckboxGroupArray
+          identifier={identifier}
+          data={data}
+          defaultValue={defaultValue}
+          onChange={onChange}
+          type={type}
+          extras={extras}
+          defaultDataExtras={defaultValue?.extras}
+          onChangeExtras={onChangeExtraField}
+        />
+      );
+    }
+
+    if (type === FIELD_TYPE_ENUM.text) {
+      return (
+        <Input
+          placeholder="Texto curto"
+          defaultValue={defaultValue}
+          onChangeText={onChange}
+        />
+      );
+    }
+
+    if (type === FIELD_TYPE_ENUM.text_long) {
+      return (
+        <Textarea
+          placeholder="Texto longo"
+          defaultValue={defaultValue}
+          onChangeText={onChange}
+        />
+      );
+    }
+
+    if (type === FIELD_TYPE_ENUM.select) {
+      return (
+        <SelectData
+          identifier={identifier}
+          data={selectData}
+          dataWhere={dataWhere}
+          defaultValue={defaultValue}
+          onChange={onChange}
+          onClearSelect={onClearSelect}
+          collections={collections}
+        />
+      );
+    }
+  }, [
+    collections,
+    data,
+    dataWhere,
+    defaultValue,
+    extras,
+    identifier,
+    onChange,
+    onChangeExtraField,
+    onClearSelect,
+    selectData,
+    type,
+  ]);
+
+  if (isLoading) {
+    return <ActivityIndicator animating size="small" color="#000" />;
+  }
+
+  return component;
+});
+
+RenderComponent.displayName = "RenderComponent";

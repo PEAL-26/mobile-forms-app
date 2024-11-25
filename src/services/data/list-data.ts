@@ -25,7 +25,10 @@ type DataResponse = {
   title: string;
 };
 
-export async function generateData(data?: string | null, params?: Params) {
+export async function generateDataPaginate(
+  data?: DataRequest | null,
+  params?: Params
+) {
   if (!data) return {} as PaginatedResult<DataResponse>;
   const { query = "", page = 1, size = 10, dataWhere } = params || {};
   const parseData = JSON.parse(JSON.stringify(data)) as DataRequest;
@@ -36,34 +39,9 @@ export async function generateData(data?: string | null, params?: Params) {
   }
 
   if (parseData.type === DATA_TYPE_ENUM.data_table) {
-    if (parseData.src) {
-      const [table, fieldId, fieldTitle] = parseData.src
-        .split(";")
-        .map((value: string) => value.trim());
-      const [id, idAS] = fieldId
-        .split("as")
-        .map((value: string) => value.trim());
-      const [title, titleAS] = fieldTitle
-        .split("as")
-        .map((value: string) => value.trim());
-
-      let select = {};
-      setNestedValue(select, `${id}.as`, idAS);
-      setNestedValue(select, `${title}.as`, titleAS);
-
-      let where = {};
-      setNestedValue(where, `${title}.as`, `${table}_${titleAS}`);
-      setNestedValue(where, `${title}.op`, "like");
-      setNestedValue(where, `${title}.value`, query);
-
-      if (dataWhere) {
-        setNestedValue(
-          where,
-          `${dataWhere.child_field}.value`,
-          dataWhere.value
-        );
-      }
-
+    const querySql = generateQuery(parseData, dataWhere, query);
+    if (querySql) {
+      const { table, select, where } = querySql;
       return db.listPaginate<DataResponse>(table, {
         select,
         where,
@@ -72,6 +50,35 @@ export async function generateData(data?: string | null, params?: Params) {
   }
 
   return {} as PaginatedResult<DataResponse>;
+}
+
+export async function generateData(data?: DataRequest | null, params?: Params) {
+  if (!data) return [];
+  const { query = "", dataWhere } = params || {};
+  const parseData = JSON.parse(JSON.stringify(data)) as DataRequest;
+
+  if (parseData.type === DATA_TYPE_ENUM.list) {
+    const newData: DataResponse[] = parseData?.src || [];
+    const response = await paginateArray<DataResponse>(
+      newData,
+      1,
+      newData.length
+    );
+    return response.data;
+  }
+
+  if (parseData.type === DATA_TYPE_ENUM.data_table) {
+    const querySql = generateQuery(parseData, dataWhere, query);
+    if (querySql) {
+      const { table, select, where } = querySql;
+      return db.listAll<DataResponse>(table, {
+        select,
+        where,
+      });
+    }
+  }
+
+  return [];
 }
 
 async function paginateArray<T>(
@@ -101,4 +108,37 @@ async function paginateArray<T>(
     prev: currentPage > 1 ? currentPage - 1 : null,
     next: currentPage < totalPages ? currentPage + 1 : null,
   };
+}
+
+function generateQuery(
+  parseData: DataRequest,
+  dataWhere: DataWhere | null | undefined,
+  query = ""
+) {
+  if (parseData.src) {
+    const [table, fieldId, fieldTitle] = parseData.src
+      .split(";")
+      .map((value: string) => value.trim());
+    const [id, idAS] = fieldId.split("as").map((value: string) => value.trim());
+    const [title, titleAS] = fieldTitle
+      .split("as")
+      .map((value: string) => value.trim());
+
+    let select = {};
+    setNestedValue(select, `${id}.as`, idAS);
+    setNestedValue(select, `${title}.as`, titleAS);
+
+    let where = {};
+    setNestedValue(where, `${title}.as`, `${table}_${titleAS}`);
+    setNestedValue(where, `${title}.op`, "like");
+    setNestedValue(where, `${title}.value`, query);
+
+    if (dataWhere) {
+      setNestedValue(where, `${dataWhere.child_field}.value`, dataWhere.value);
+    }
+
+    return { table, select, where };
+  }
+
+  return undefined;
 }

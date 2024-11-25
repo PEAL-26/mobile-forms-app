@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { RadioGroup, RadioGroupItemWithLabel } from "../../radio-group";
 import { ComponentExtra } from "./component-extras";
+import { ExtraFieldType } from "@/db";
 
 interface Props {
   defaultData?: string;
   onChange?(value: boolean): void;
   type: string;
   identifier?: string;
-  extras?: string;
+  extras?: ExtraFieldType;
   defaultDataExtras?: any;
   onChangeExtras?: (data: any) => void;
 }
@@ -34,7 +35,8 @@ export function RadioYesNo(props: Props) {
 
   const handleChangeExtras = (data: any) => {
     onChangeExtras?.({
-      ...data.parent, identifier,
+      ...data.parent,
+      identifier,
       extras: { value: data.value, display: data.display },
     });
   };

@@ -29,7 +29,27 @@ export enum DATA_TYPE_ENUM {
   "data_table" = "data_table",
 }
 
+export type ExtraFieldTriggerType = "true" | "false" | "any";
+
+export type ExtraFieldType = {
+  type: FIELD_TYPE_ENUM;
+  display: string;
+  trigger: ExtraFieldTriggerType;
+};
+
 export type FieldType = keyof typeof FIELD_TYPE_ENUM;
+
+export type FieldDataWhereType = {
+  parent_field?: string | null;
+  child_field?: string | null;
+  parent_identifier?: string | null;
+  value?: any | null;
+};
+
+export type FieldDataType = {
+  type: DATA_TYPE_ENUM;
+  src?: any;
+};
 
 export const FIELD_TYPE_MAP: Record<FieldType, string> = {
   number: "Número",
@@ -65,7 +85,7 @@ export const formField = sqliteTable("forms_fields", {
   identifier: text("identifier").notNull(),
 
   data: text("data", { mode: "json" }),
-// {type: 'list'|'data_table', src: ''}
+  // {type: 'list'|'data_table', src: ''}
 
   dataWhere: text("data_where", { mode: "json" }),
   // {field:string, value:string, from_another_selection: string}
