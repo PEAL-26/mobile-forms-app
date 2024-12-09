@@ -11,10 +11,18 @@ import { Check } from "lucide-react-native";
 import { View } from "react-native";
 import { Label } from "./label";
 
+type CheckboxProps = Omit<
+  ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>,
+  "checked" | "onCheckedChange"
+> & {
+  checked?: boolean;
+  onCheckedChange?(checked: boolean): void;
+};
+
 const Checkbox = forwardRef<
   ElementRef<typeof CheckboxPrimitive.Root>,
-  ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>
->(({ className, ...props }, ref) => {
+  CheckboxProps
+>(({ className, checked = false, onCheckedChange, ...props }, ref) => {
   return (
     <CheckboxPrimitive.Root
       ref={ref}
@@ -22,6 +30,8 @@ const Checkbox = forwardRef<
         "web:peer h-4 w-4 native:h-[20] native:w-[20] shrink-0 rounded-sm native:rounded border border-gray-300 web:ring-offset-background web:focus-visible:outline-none web:focus-visible:ring-2 web:focus-visible:ring-ring web:focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 bg-white",
         className
       )}
+      checked={checked}
+      onCheckedChange={(checked) => onCheckedChange?.(checked)}
       {...props}
     >
       <CheckboxPrimitive.Indicator
@@ -38,16 +48,18 @@ const Checkbox = forwardRef<
 });
 Checkbox.displayName = CheckboxPrimitive.Root.displayName;
 
-function CheckboxGroupItemWithLabel({
+function CheckboxWithLabel({
   checked = false,
   value,
   label,
   onChecked,
+  labelClassName,
 }: Readonly<{
   label: string;
   value?: string;
   checked?: boolean;
   onChecked?: (checked: boolean) => void;
+  labelClassName?: string;
 }>) {
   const [currentChecked, setChecked] = useState(checked);
 
@@ -64,6 +76,7 @@ function CheckboxGroupItemWithLabel({
         onCheckedChange={handleChecked}
       />
       <Label
+        className={labelClassName}
         nativeID={"label-for-" + value || label}
         onPress={() => handleChecked(!currentChecked)}
       >
@@ -73,4 +86,4 @@ function CheckboxGroupItemWithLabel({
   );
 }
 
-export { Checkbox, CheckboxGroupItemWithLabel };
+export { Checkbox, CheckboxWithLabel };

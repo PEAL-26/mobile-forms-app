@@ -63,6 +63,17 @@ export enum DATABASE_COLUMNS_TYPE_ENUM {
   "NUMERIC" = "NUMERIC",
 }
 
+export const DATABASE_COLUMNS_TYPE_ENUM_MAP: Record<
+  DATABASE_COLUMNS_TYPE_ENUM,
+  string
+> = {
+  INTEGER: "Inteiro",
+  TEXT: "Texto",
+  BLOB: "Dados",
+  REAL: "Real",
+  NUMERIC: "Numérico",
+};
+
 export type DatabaseCreateTableColumns = Record<
   string,
   DATABASE_COLUMNS_TYPE_ENUM

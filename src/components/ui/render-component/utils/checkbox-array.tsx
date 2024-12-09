@@ -1,6 +1,6 @@
 import { View } from "react-native";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
-import { CheckboxGroupItemWithLabel } from "../../checkbox";
+import { CheckboxWithLabel } from "../../checkbox";
 import { ComponentExtra } from "./component-extras";
 import { ExtraFieldType } from "@/db";
 
@@ -156,7 +156,7 @@ export function CheckboxCustom(props: CheckboxCustomPros) {
 
   return (
     <>
-      <CheckboxGroupItemWithLabel
+      <CheckboxWithLabel
         value={value}
         label={label}
         checked={!!checked}

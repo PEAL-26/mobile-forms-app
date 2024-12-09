@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { CheckboxGroupItemWithLabel } from "@/components/ui/checkbox";
+import { CheckboxWithLabel } from "@/components/ui/checkbox";
 
 import { FormFieldSchemaType } from "./schema";
 import {
@@ -47,7 +47,7 @@ export const FieldComponent = memo((props: Props) => {
   return (
     <View className="flex flex-col gap-2 ">
       <View className="flex-row items-center justify-between w-full">
-        <CheckboxGroupItemWithLabel
+        <CheckboxWithLabel
           label="Campo obrigatório?"
           value="required-field"
           checked={field.required}

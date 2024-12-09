@@ -17,6 +17,7 @@ interface Props<T> {
   containerClassName?: string;
   search?: boolean;
   dropdownWith?: number;
+  disabled?: boolean;
 }
 
 export function SelectData<T>(props: Props<T>) {
@@ -30,11 +31,13 @@ export function SelectData<T>(props: Props<T>) {
     containerClassName,
     defaultValue,
     dropdownWith,
+    disabled,
   } = props;
 
   return (
     <SelectDropdown
       data={data}
+      disabled={disabled}
       defaultValue={defaultValue}
       onSelect={(item, index) => onSelect?.(item, index)}
       dropdownOverlayColor="transparent"
@@ -44,6 +47,7 @@ export function SelectData<T>(props: Props<T>) {
       renderButton={(selectedItem, isOpened) => {
         return (
           <Button
+            disabled={disabled}
             className={cn(
               "h-12 px-3 text-xs w-full rounded-md border border-input bg-background flex-row items-center justify-between gap-2",
               className
