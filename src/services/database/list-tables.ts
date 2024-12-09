@@ -9,6 +9,7 @@ export type ListTablesParams = {
 export type ListTablesResponseData = {
   id: number;
   name: string;
+  columns: string;
 };
 
 export async function listTableService(params?: ListTablesParams) {
@@ -17,11 +18,15 @@ export async function listTableService(params?: ListTablesParams) {
     select: {
       id: true,
       name: true,
+      columns: true,
     },
     page,
     size,
     where: {
-      name: query,
+      name: {
+        op: "like",
+        value: query,
+      },
     },
   });
 }

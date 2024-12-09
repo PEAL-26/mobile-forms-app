@@ -31,30 +31,30 @@ export function generateQueryFields(select?: DatabaseConfigSelect) {
 export function generateWhereClause(where?: DatabaseWhere): string {
   if (!where) return "";
 
-  const conditions = Object.entries(where).map(([key, condition]) => {
-    let column = key;
-    let value: DatabaseWhereField = condition;
-    let op = "equal";
-    if (typeof condition === "object") {
-      column = condition.as || key;
-      value = condition.value !== undefined ? condition.value : undefined;
-      op = condition.op || "equal";
-    }
+  const conditions = Object.entries(where)
+    .map(([key, condition]) => {
+      let column = key;
+      let value: DatabaseWhereField = condition;
+      let op = "equal";
+      if (typeof condition === "object") {
+        column = condition.as || key;
+        value = condition.value !== undefined ? condition.value : undefined;
+        op = condition.op || "equal";
+      }
 
-    if (value !== undefined) {
-      const where = {
-        equal: `${column} = '${value}'`,
-        like: `LOWER(${column}) LIKE LOWER('%${value}%')`,
-      }[op];
-      return where || "";
-    }
+      if (value !== undefined) {
+        const where = {
+          equal: `${column} = '${value}'`,
+          like: `LOWER(${column}) LIKE LOWER('%${value}%')`,
+        }[op];
+        return where || "";
+      }
 
-    return "";
-  });
+      return "";
+    })
+    .filter(Boolean);
 
-  return conditions.length > 0
-    ? `WHERE ${conditions.filter(Boolean).join(" AND ")}`
-    : "";
+  return conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 }
 
 let joins: string[] = [];
@@ -64,8 +64,15 @@ let tables: string[] = [];
 export function generateIncludes(
   tableMain: string,
   include?: DatabaseInclude,
-  recursive = false
+  recursive = false,
+  clear = true
 ) {
+  if (clear) {
+    joins = [];
+    fields = [];
+    tables = [];
+  }
+
   if (!recursive) {
     joins = [];
     fields = [];
@@ -94,7 +101,7 @@ export function generateIncludes(
       joins.push(join);
 
       if (include) {
-        generateIncludes(key, include, true);
+        generateIncludes(key, include, true, false);
       }
     }
   }
@@ -111,12 +118,20 @@ export function serialize(data: any, tableNames: string[]) {
       const fieldReplaced = field.replaceAll(`${mainTable}_`, "");
       obj[fieldReplaced] = value;
     } else {
-      for (const table of tableNames.slice(1)) {
-        if (field.startsWith(table)) {
-          const fieldReplaced = field.replaceAll(`${table}_`, "");
-          if (field === `${table}_${fieldReplaced}`) {
-            setNestedValue(obj, `${table}.${fieldReplaced}`, value);
-            break;
+      const restTables = tableNames.slice(1);
+
+      if (!restTables.length) {
+        obj[field] = value;
+      }
+
+      if (restTables.length) {
+        for (const table of restTables) {
+          if (field.startsWith(table)) {
+            const fieldReplaced = field.replaceAll(`${table}_`, "");
+            if (field === `${table}_${fieldReplaced}`) {
+              setNestedValue(obj, `${table}.${fieldReplaced}`, value);
+              break;
+            }
           }
         }
       }

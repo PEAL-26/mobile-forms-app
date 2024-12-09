@@ -64,7 +64,6 @@ export function ListingFormsModal(props: Props) {
       onRequestClose={handleClose}
       transparent
       statusBarTranslucent
-      animationType="fade"
     >
       <View className="flex-1 justify-center items-center bg-black/50 p-10">
         <View className="rounded-md bg-white shadow overflow-hidden h-[400px] w-full">

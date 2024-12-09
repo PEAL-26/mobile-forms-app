@@ -1,0 +1,1 @@
+ALTER TABLE `data_tables` ADD `columns` text NOT NULL;

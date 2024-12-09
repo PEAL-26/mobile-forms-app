@@ -98,11 +98,15 @@ export function useSeeds(props: Props) {
 
         if (dataTable.count === 0) {
           await Promise.all(
-            ["provinces", "cities", "formations"].map((name, index) =>
+            [
+              { name: "provinces", columns: "id; name" },
+              { name: "cities", columns: "id; name; province_id" },
+              { name: "formations", columns: "id; name; level" },
+            ].map(({ name, columns }, index) =>
               connection.run(
-                `INSERT INTO  data_tables (id, name) VALUES (${
+                `INSERT INTO  data_tables (id, name, columns) VALUES (${
                   index + 1
-                }, "${name}");`
+                }, "${name}", "${columns}");`
               )
             )
           );

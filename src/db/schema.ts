@@ -145,6 +145,7 @@ export const dataCollection = sqliteTable("data_collection", {
 export const dataTable = sqliteTable("data_tables", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
   name: text("name").notNull(),
+  columns: text("columns").notNull(),
   createdAt: integer("created_at", { mode: "timestamp" }).default(
     sql`current_timestamp`
   ),

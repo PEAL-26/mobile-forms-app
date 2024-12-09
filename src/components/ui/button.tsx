@@ -16,12 +16,13 @@ import {
   ViewStyle,
 } from "react-native";
 
-interface CustomProps extends TouchableOpacityProps{
+export interface CustomProps extends TouchableOpacityProps {
   textClassName?: string;
   containerClassName?: string;
   iconClassName?: string;
   icon?: ElementType;
   iconColor?: string;
+  iconSize?: number;
   children?: ReactNode;
   className?: string;
   style?: ViewStyle;
@@ -40,6 +41,8 @@ export const Button = forwardRef<
     style,
     icon: Icon,
     iconColor = "#000",
+    iconSize,
+    disabled,
     ...rest
   } = props;
 
@@ -48,13 +51,18 @@ export const Button = forwardRef<
   return (
     <TouchableOpacity
       {...rest}
+      disabled={disabled}
       ref={ref}
       activeOpacity={0.6}
       className={cn("w-fit", containerClassName)}
     >
       <View style={[style]} className={cn(className)}>
         {Icon && (
-          <Icon style={{ color: iconColor }} className={cn(iconClassName)} />
+          <Icon
+            size={iconSize}
+            style={{ color: disabled ? "#6b7280" : iconColor }}
+            className={cn(iconClassName)}
+          />
         )}
         {children && (
           <>
